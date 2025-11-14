@@ -5,12 +5,33 @@ const prisma = new PrismaClient();
 
 export async function createOrderHandler(req: Request, res: Response) {
   const userId = req.user!.userId;
-  const { address } = req.body as { address: string };
+  const { address, customerInfo, paymentMethod } = req.body as { 
+    address: string;
+    customerInfo: {
+      fullName: string;
+      phone: string;
+      email: string;
+      address: string;
+    };
+    paymentMethod: string;
+  };
+  
   const cartItems = await prisma.cartItem.findMany({ where: { userId }, include: { product: true } });
   if (cartItems.length === 0) return res.status(400).json({ message: 'Cart is empty' });
   const totalAmount = cartItems.reduce((sum, item) => sum + Number(item.product.price) * item.quantity, 0);
+  
   const order = await prisma.$transaction(async (tx) => {
-    const created = await tx.order.create({ data: { userId, address, totalAmount } });
+    const created = await tx.order.create({ 
+      data: { 
+        userId, 
+        address: customerInfo?.address || address,
+        customerName: customerInfo?.fullName,
+        customerPhone: customerInfo?.phone,
+        customerEmail: customerInfo?.email,
+        paymentMethod,
+        totalAmount 
+      } 
+    });
     await tx.orderItem.createMany({
       data: cartItems.map((ci) => ({ orderId: created.id, productId: ci.productId, quantity: ci.quantity, price: ci.product.price }))
     });
@@ -35,7 +56,7 @@ export async function getOrderHandler(req: Request, res: Response) {
 }
 
 export async function listAllOrdersHandler(_req: Request, res: Response) {
-  const orders = await prisma.order.findMany({ include: { items: true, user: true }, orderBy: { createdAt: 'desc' } });
+  const orders = await prisma.order.findMany({ include: { items: { include: { product: true } }, user: true }, orderBy: { createdAt: 'desc' } });
   return res.json(orders);
 }
 

@@ -10,11 +10,14 @@ type Product = {
     stock: number;
     categoryId: number;
     images?: any;
+    colors?: any;
 };
 
 type Category = {
     id: number;
     name: string;
+    parentId?: number;
+    children?: Category[];
 };
 
 export default function AdminProductsPage() {
@@ -31,8 +34,27 @@ export default function AdminProductsPage() {
         categoryId: 0,
         images: "",
     });
+    const [selectedColors, setSelectedColors] = useState<string[]>([]);
     const [uploadedImages, setUploadedImages] = useState<string[]>([]);
     const [uploading, setUploading] = useState(false);
+    const [selectedParentCategory, setSelectedParentCategory] = useState<number>(0);
+    const [childCategories, setChildCategories] = useState<Category[]>([]);
+
+    // Danh sách màu sắc có sẵn
+    const availableColors = [
+        { name: "Đen", value: "#000000" },
+        { name: "Trắng", value: "#FFFFFF" },
+        { name: "Đỏ", value: "#FF0000" },
+        { name: "Xanh dương", value: "#0000FF" },
+        { name: "Xanh lá", value: "#00FF00" },
+        { name: "Vàng", value: "#FFFF00" },
+        { name: "Cam", value: "#FFA500" },
+        { name: "Tím", value: "#800080" },
+        { name: "Hồng", value: "#FFC0CB" },
+        { name: "Xám", value: "#808080" },
+        { name: "Nâu", value: "#A52A2A" },
+        { name: "Xanh navy", value: "#000080" },
+    ];
 
     // Function để xử lý URL ảnh
     const getImageUrl = (imageUrl: string): string => {
@@ -78,16 +100,20 @@ export default function AdminProductsPage() {
     };
 
     const handleCreate = () => {
+        const parentCategories = categories.filter(cat => !cat.parentId);
         setEditingProduct(null);
         setFormData({
             name: "",
             description: "",
             price: "",
             stock: 0,
-            categoryId: categories[0]?.id || 0,
+            categoryId: 0,
             images: "",
         });
         setUploadedImages([]);
+        setSelectedColors([]);
+        setSelectedParentCategory(0);
+        setChildCategories([]);
         setShowModal(true);
     };
 
@@ -119,6 +145,46 @@ export default function AdminProductsPage() {
             }
         }
 
+        // Xử lý colors từ product
+        let existingColors: string[] = [];
+        if (product.colors) {
+            if (Array.isArray(product.colors)) {
+                existingColors = product.colors;
+            } else if (typeof product.colors === "string") {
+                try {
+                    const parsedColors = JSON.parse(product.colors);
+                    if (Array.isArray(parsedColors)) {
+                        existingColors = parsedColors;
+                    }
+                } catch {
+                    // Nếu không parse được, coi như là màu đơn
+                    existingColors = [product.colors];
+                }
+            }
+        }
+
+        // Xác định danh mục cha và con
+        const selectedCategory = categories.find(cat => cat.id === product.categoryId);
+        let parentCategoryId = 0;
+        let childCategoriesList: Category[] = [];
+        
+        if (selectedCategory) {
+            if (selectedCategory.parentId) {
+                // Nếu là danh mục con
+                parentCategoryId = selectedCategory.parentId;
+                const parentCategory = categories.find(cat => cat.id === selectedCategory.parentId);
+                if (parentCategory && parentCategory.children) {
+                    childCategoriesList = parentCategory.children;
+                }
+            } else {
+                // Nếu là danh mục cha
+                parentCategoryId = selectedCategory.id;
+                if (selectedCategory.children) {
+                    childCategoriesList = selectedCategory.children;
+                }
+            }
+        }
+
         setFormData({
             name: product.name,
             description: product.description,
@@ -128,6 +194,9 @@ export default function AdminProductsPage() {
             images: "",
         });
         setUploadedImages(existingImages);
+        setSelectedColors(existingColors);
+        setSelectedParentCategory(parentCategoryId);
+        setChildCategories(childCategoriesList);
         setShowModal(true);
     };
 
@@ -164,6 +233,27 @@ export default function AdminProductsPage() {
         setUploadedImages(updatedImages);
     };
 
+    const handleColorToggle = (colorValue: string) => {
+        if (selectedColors.includes(colorValue)) {
+            setSelectedColors(selectedColors.filter(c => c !== colorValue));
+        } else {
+            setSelectedColors([...selectedColors, colorValue]);
+        }
+    };
+
+    const handleParentCategoryChange = (parentCategoryId: number) => {
+        setSelectedParentCategory(parentCategoryId);
+        setFormData({ ...formData, categoryId: parentCategoryId });
+        
+        // Tìm danh mục con của danh mục cha được chọn
+        const parentCategory = categories.find(cat => cat.id === parentCategoryId);
+        if (parentCategory && parentCategory.children) {
+            setChildCategories(parentCategory.children);
+        } else {
+            setChildCategories([]);
+        }
+    };
+
     const handleSave = async () => {
         try {
             if (!formData.categoryId) {
@@ -178,6 +268,7 @@ export default function AdminProductsPage() {
                 stock: parseInt(String(formData.stock)),
                 categoryId: formData.categoryId,
                 images: uploadedImages,
+                colors: selectedColors,
             };
 
             if (editingProduct) {
@@ -433,25 +524,99 @@ export default function AdminProductsPage() {
                                 <label className="block text-sm font-medium mb-2">
                                     Danh mục
                                 </label>
-                                <select
-                                    value={formData.categoryId}
-                                    onChange={(e) =>
-                                        setFormData({
-                                            ...formData,
-                                            categoryId: parseInt(
-                                                e.target.value
-                                            ),
-                                        })
-                                    }
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                                >
-                                    <option value={0}>Chọn danh mục</option>
-                                    {categories.map((cat) => (
-                                        <option key={cat.id} value={cat.id}>
-                                            {cat.name}
-                                        </option>
+                                <div className="grid grid-cols-2 gap-4">
+                                    {/* Dropdown danh mục cha */}
+                                    <div>
+                                        <label className="block text-xs text-gray-600 mb-1">
+                                            Danh mục cha
+                                        </label>
+                                        <select
+                                            value={selectedParentCategory}
+                                            onChange={(e) => handleParentCategoryChange(parseInt(e.target.value))}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                                        >
+                                            <option value={0}>Chọn danh mục cha</option>
+                                            {categories.filter(cat => !cat.parentId).map((cat) => (
+                                                <option key={cat.id} value={cat.id}>
+                                                    {cat.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    {/* Dropdown danh mục con */}
+                                    <div>
+                                        <label className="block text-xs text-gray-600 mb-1">
+                                            Danh mục con (tùy chọn)
+                                        </label>
+                                        <select
+                                            value={formData.categoryId}
+                                            onChange={(e) =>
+                                                setFormData({
+                                                    ...formData,
+                                                    categoryId: parseInt(e.target.value),
+                                                })
+                                            }
+                                            disabled={childCategories.length === 0}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                        >
+                                            <option value={selectedParentCategory}>
+                                                {selectedParentCategory === 0 
+                                                    ? "Chọn danh mục cha trước" 
+                                                    : "Sử dụng danh mục cha"}
+                                            </option>
+                                            {childCategories.map((cat) => (
+                                                <option key={cat.id} value={cat.id}>
+                                                    {cat.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium mb-2">
+                                    Màu sắc sản phẩm
+                                </label>
+                                <div className="grid grid-cols-4 gap-3">
+                                    {availableColors.map((color) => (
+                                        <div
+                                            key={color.value}
+                                            className={`relative border-2 rounded-lg p-3 cursor-pointer transition ${
+                                                selectedColors.includes(color.value)
+                                                    ? "border-black bg-gray-50"
+                                                    : "border-gray-200 hover:border-gray-300"
+                                            }`}
+                                            onClick={() => handleColorToggle(color.value)}
+                                        >
+                                            <div className="flex items-center gap-2">
+                                                <div
+                                                    className="w-6 h-6 rounded-full border border-gray-300"
+                                                    style={{ backgroundColor: color.value }}
+                                                ></div>
+                                                <span className="text-sm font-medium">{color.name}</span>
+                                            </div>
+                                            {selectedColors.includes(color.value) && (
+                                                <div className="absolute top-1 right-1 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                                                    ✓
+                                                </div>
+                                            )}
+                                        </div>
                                     ))}
-                                </select>
+                                </div>
+                                {selectedColors.length > 0 && (
+                                    <div className="mt-3">
+                                        <p className="text-sm text-gray-600">
+                                            Đã chọn {selectedColors.length} màu: {" "}
+                                            {selectedColors.map(colorValue => {
+                                                const color = availableColors.find(c => c.value === colorValue);
+                                                return color?.name;
+                                            }).join(", ")}
+                                        </p>
+                                    </div>
+                                )}
                             </div>
 
                             <div>

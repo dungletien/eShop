@@ -16,6 +16,44 @@ export default function CheckoutPage() {
     const [cartLoading, setCartLoading] = useState(true);
     const navigate = useNavigate();
 
+    // Function để xử lý màu sắc từ sản phẩm
+    const getProductColors = (product: any): string[] => {
+        if (product?.colors) {
+            if (Array.isArray(product.colors) && product.colors.length > 0) {
+                return product.colors;
+            } else if (typeof product.colors === "string") {
+                try {
+                    const parsedColors = JSON.parse(product.colors);
+                    if (Array.isArray(parsedColors) && parsedColors.length > 0) {
+                        return parsedColors;
+                    }
+                } catch {
+                    return [product.colors];
+                }
+            }
+        }
+        return [];
+    };
+
+    // Lấy tên màu từ hex code
+    const getColorName = (colorHex: string): string => {
+        const colorMap: { [key: string]: string } = {
+            "#000000": "Đen",
+            "#FFFFFF": "Trắng", 
+            "#FF0000": "Đỏ",
+            "#0000FF": "Xanh dương",
+            "#00FF00": "Xanh lá",
+            "#FFFF00": "Vàng",
+            "#FFA500": "Cam",
+            "#800080": "Tím",
+            "#FFC0CB": "Hồng",
+            "#808080": "Xám",
+            "#A52A2A": "Nâu",
+            "#000080": "Xanh navy",
+        };
+        return colorMap[colorHex.toUpperCase()] || colorHex;
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -83,8 +121,7 @@ export default function CheckoutPage() {
         return sum + Number(item.product?.price || 0) * item.quantity;
     }, 0);
 
-    const shippingFee = 30000; // Phí vận chuyển cố định
-    const total = subtotal + shippingFee;
+    const total = subtotal;
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -309,46 +346,70 @@ export default function CheckoutPage() {
                                     <>
                                         {/* Danh sách sản phẩm */}
                                         <div className="space-y-3 mb-4 max-h-60 overflow-y-auto">
-                                            {cartItems.map((item) => (
-                                                <div
-                                                    key={item.id}
-                                                    className="flex items-center gap-3 p-2 bg-gray-50 rounded-lg"
-                                                >
-                                                    <div className="flex-1">
-                                                        <h4 className="text-sm font-medium text-gray-900 line-clamp-1">
-                                                            {item.product?.name}
-                                                        </h4>
-                                                        <div className="flex items-center gap-2 text-xs text-gray-600">
-                                                            <span>
-                                                                Số lượng:{" "}
-                                                                {item.quantity}
-                                                            </span>
-                                                            <span>•</span>
-                                                            <span>
-                                                                {Number(
+                                            {cartItems.map((item) => {
+                                                const productColors = getProductColors(item.product);
+                                                return (
+                                                    <div
+                                                        key={item.id}
+                                                        className="flex items-center gap-3 p-2 bg-gray-50 rounded-lg"
+                                                    >
+                                                        <div className="flex-1">
+                                                            <h4 className="text-sm font-medium text-gray-900 line-clamp-1">
+                                                                {item.product?.name}
+                                                            </h4>
+                                                            <div className="flex items-center gap-2 text-xs text-gray-600">
+                                                                <span>
+                                                                    Số lượng:{" "}
+                                                                    {item.quantity}
+                                                                </span>
+                                                                <span>•</span>
+                                                                <span>
+                                                                    {Number(
+                                                                        item.product
+                                                                            ?.price ||
+                                                                            0
+                                                                    ).toLocaleString(
+                                                                        "vi-VN"
+                                                                    )}
+                                                                    ₫
+                                                                </span>
+                                                            </div>
+                                                            {/* Hiển thị màu sắc có sẵn */}
+                                                            {productColors.length > 0 && (
+                                                                <div className="flex items-center gap-2 mt-1">
+                                                                    <span className="text-xs text-gray-500">Màu:</span>
+                                                                    <div className="flex items-center gap-1">
+                                                                        {productColors.slice(0, 3).map((color, colorIndex) => (
+                                                                            <div
+                                                                                key={colorIndex}
+                                                                                className="w-3 h-3 rounded-full border border-gray-300"
+                                                                                style={{ backgroundColor: color }}
+                                                                                title={getColorName(color)}
+                                                                            />
+                                                                        ))}
+                                                                        {productColors.length > 3 && (
+                                                                            <span className="text-xs text-gray-500">
+                                                                                +{productColors.length - 3}
+                                                                            </span>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        <div className="text-sm font-medium text-gray-900">
+                                                            {(
+                                                                Number(
                                                                     item.product
-                                                                        ?.price ||
-                                                                        0
-                                                                ).toLocaleString(
-                                                                    "vi-VN"
-                                                                )}
-                                                                ₫
-                                                            </span>
+                                                                        ?.price || 0
+                                                                ) * item.quantity
+                                                            ).toLocaleString(
+                                                                "vi-VN"
+                                                            )}
+                                                            ₫
                                                         </div>
                                                     </div>
-                                                    <div className="text-sm font-medium text-gray-900">
-                                                        {(
-                                                            Number(
-                                                                item.product
-                                                                    ?.price || 0
-                                                            ) * item.quantity
-                                                        ).toLocaleString(
-                                                            "vi-VN"
-                                                        )}
-                                                        ₫
-                                                    </div>
-                                                </div>
-                                            ))}
+                                                );
+                                            })}
                                         </div>
 
                                         <div className="space-y-3 mb-6">
@@ -359,17 +420,6 @@ export default function CheckoutPage() {
                                                 </span>
                                                 <span className="font-medium">
                                                     {subtotal.toLocaleString(
-                                                        "vi-VN"
-                                                    )}
-                                                    ₫
-                                                </span>
-                                            </div>
-                                            <div className="flex justify-between text-sm">
-                                                <span className="text-gray-600">
-                                                    Phí vận chuyển
-                                                </span>
-                                                <span className="font-medium">
-                                                    {shippingFee.toLocaleString(
                                                         "vi-VN"
                                                     )}
                                                     ₫

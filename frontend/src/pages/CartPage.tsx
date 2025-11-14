@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../shared/api';
 import { Trash2 } from 'lucide-react';
+import Breadcrumb from '../components/Breadcrumb';
 
 type CartItem = {
   id: number;
@@ -46,7 +47,12 @@ export default function CartPage() {
 
   return (
     <div className="container mx-auto px-40 py-10">
-      <h1 className="text-4xl font-semibold mb-8">Giỏ hàng</h1>
+      <Breadcrumb
+        items={[
+          { label: "Giỏ hàng" }
+        ]}
+      />
+      <h1 className="text-4xl font-semibold mb-8 mt-6">Giỏ hàng</h1>
 
       {items.length === 0 ? (
         <div className="text-center py-20">
@@ -84,10 +90,7 @@ export default function CartPage() {
                     +
                   </button>
                 </div>
-                <div className="text-right min-w-[120px]">
-                  <p className="text-xl font-semibold mb-2">
-                    {(Number(item.product.price) * item.quantity).toLocaleString('vi-VN')} ₫
-                  </p>
+                <div className="text-right">
                   <button
                     onClick={() => removeItem(item.product.id)}
                     className="text-red-500 hover:text-red-700"

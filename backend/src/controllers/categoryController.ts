@@ -4,7 +4,14 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export async function listCategoriesHandler(_req: Request, res: Response) {
-  const categories = await prisma.category.findMany({ orderBy: { name: 'asc' } });
+  const categories = await prisma.category.findMany({ 
+    orderBy: { name: 'asc' },
+    include: {
+      children: {
+        orderBy: { name: 'asc' }
+      }
+    }
+  });
   return res.json(categories);
 }
 
