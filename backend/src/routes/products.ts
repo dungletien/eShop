@@ -5,7 +5,7 @@ import { requireAdmin } from '../middleware/auth';
 export const router = Router();
 
 router.get('/', listProductsHandler);
-router.get('/:slug', getProductHandler);
+router.get('/:id', getProductHandler);
 
 router.post('/', requireAdmin, createProductHandler);
 router.put('/:id', requireAdmin, updateProductHandler);

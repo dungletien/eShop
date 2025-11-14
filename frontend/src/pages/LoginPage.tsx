@@ -1,27 +1,90 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { api } from '../shared/api';
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { api } from "../shared/api";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const navigate = useNavigate();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const navigate = useNavigate();
 
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const res = await api.post('/auth/login', { email, password });
-    localStorage.setItem('token', res.data.token);
-    navigate('/');
-  };
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError("");
+        try {
+            const res = await api.post("/auth/login", { email, password });
+            localStorage.setItem("token", res.data.token);
 
-  return (
-    <form onSubmit={submit} style={{ maxWidth: 360 }}>
-      <h2>Đăng nhập</h2>
-      <input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} type="email" required />
-      <input placeholder="Mật khẩu" value={password} onChange={(e) => setPassword(e.target.value)} type="password" required />
-      <button type="submit">Đăng nhập</button>
-    </form>
-  );
+            // Lấy thông tin user để kiểm tra role
+            const userRes = await api.get("/auth/me");
+            const user = userRes.data;
+
+            // Chuyển hướng dựa trên role
+            if (user.role === "ADMIN") {
+                navigate("/admin");
+            } else {
+                navigate("/");
+            }
+
+            window.location.reload();
+        } catch (error: any) {
+            setError(error.response?.data?.message || "Đăng nhập thất bại");
+        }
+    };
+
+    return (
+        <div className="min-h-[60vh] flex items-center justify-center px-40 py-20">
+            <div className="max-w-md w-full bg-white border border-gray-200 rounded-lg p-8">
+                <h2 className="text-3xl font-semibold mb-6 text-center">
+                    Đăng nhập
+                </h2>
+                {error && (
+                    <div className="bg-red-50 text-red-600 p-3 rounded mb-4">
+                        {error}
+                    </div>
+                )}
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium mb-2">
+                            Email
+                        </label>
+                        <input
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium mb-2">
+                            Mật khẩu
+                        </label>
+                        <input
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                        />
+                    </div>
+                    <button
+                        type="submit"
+                        className="w-full bg-black text-white py-3 rounded-lg font-medium hover:opacity-90 transition"
+                    >
+                        Đăng nhập
+                    </button>
+                </form>
+                <p className="mt-4 text-center text-sm text-gray-600">
+                    Chưa có tài khoản?{" "}
+                    <Link
+                        to="/register"
+                        className="text-black font-medium hover:underline"
+                    >
+                        Đăng ký ngay
+                    </Link>
+                </p>
+            </div>
+        </div>
+    );
 }
-
-

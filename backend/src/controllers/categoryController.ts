@@ -9,14 +9,19 @@ export async function listCategoriesHandler(_req: Request, res: Response) {
 }
 
 export async function createCategoryHandler(req: Request, res: Response) {
-  const { name, slug, parentId } = req.body as { name: string; slug: string; parentId?: number };
-  const created = await prisma.category.create({ data: { name, slug, parentId: parentId ?? null } });
+  const { name, parentId } = req.body as { name: string; parentId?: number };
+  const created = await prisma.category.create({ data: { name, parentId: parentId ?? null } });
   return res.status(201).json(created);
 }
 
 export async function updateCategoryHandler(req: Request, res: Response) {
   const { id } = req.params as { id: string };
-  const updated = await prisma.category.update({ where: { id: Number(id) }, data: req.body });
+  const { name, parentId } = req.body as { name?: string; parentId?: number | null };
+  const data: any = {};
+  if (typeof name === 'string') data.name = name;
+  if (parentId === null) data.parentId = null;
+  if (typeof parentId === 'number') data.parentId = parentId;
+  const updated = await prisma.category.update({ where: { id: Number(id) }, data });
   return res.json(updated);
 }
 
