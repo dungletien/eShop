@@ -276,21 +276,21 @@ export default function ProductDetailPage() {
         : "https://via.placeholder.com/400x400?text=No+Image";
 
     return (
-        <div className="container mx-auto px-40 py-10">
+        <div className="container mx-auto px-4 sm:px-8 md:px-16 lg:px-40 py-6 md:py-10">
             <Breadcrumb
                 items={[
                     { label: "Sản phẩm", path: "/products" },
                     { label: product?.name || "Chi tiết sản phẩm" },
                 ]}
             />
-            <div className="grid grid-cols-2 gap-12">
-                <div className="flex flex-col gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 lg:gap-12">
+                <div className="flex flex-col gap-3 md:gap-4">
                     {/* Ảnh chính */}
-                    <div className="bg-[#f6f6f6] rounded-lg p-8 flex items-center justify-center cursor-pointer hover:opacity-90 transition">
+                    <div className="bg-white rounded-lg p-4 md:p-6 lg:p-8 flex items-center justify-center cursor-pointer hover:opacity-90 transition">
                         <img
                             src={imageUrl}
                             alt={product.name}
-                            className="max-w-full max-h-96 object-contain"
+                            className="max-w-full max-h-64 sm:max-h-80 md:max-h-96 object-contain"
                             onClick={() => setShowImageModal(true)}
                             onError={(e) => {
                                 e.currentTarget.src =
@@ -301,12 +301,12 @@ export default function ProductDetailPage() {
 
                     {/* Danh sách ảnh phụ */}
                     {allImages.length > 1 && (
-                        <div className="flex gap-2 overflow-x-auto">
+                        <div className="flex gap-2 overflow-x-auto pb-2">
                             {allImages.map((image: string, index: number) => (
                                 <button
                                     key={index}
                                     onClick={() => setSelectedImageIndex(index)}
-                                    className={`flex-shrink-0 w-20 h-20 rounded border-2 overflow-hidden ${
+                                    className={`flex-shrink-0 w-16 h-16 md:w-20 md:h-20 rounded border-2 overflow-hidden ${
                                         selectedImageIndex === index
                                             ? "border-black"
                                             : "border-gray-300"
@@ -327,27 +327,27 @@ export default function ProductDetailPage() {
                     )}
                 </div>
 
-                <div className="flex flex-col gap-6">
-                    <h1 className="text-4xl font-semibold">{product.name}</h1>
-                    <p className="text-3xl font-semibold text-black">
+                <div className="flex flex-col gap-4 md:gap-6 mt-6 lg:mt-0">
+                    <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold">{product.name}</h1>
+                    <p className="text-2xl sm:text-3xl font-semibold text-black">
                         {Number(product.price).toLocaleString("vi-VN")} ₫
                     </p>
-                    <p className="text-gray-600 leading-relaxed">
+                    <p className="text-sm md:text-base text-gray-600 leading-relaxed">
                         {product.description}
                     </p>
 
                     {/* Lựa chọn màu sắc */}
                     {getAllColors().length > 0 && (
-                        <div className="flex flex-col gap-3">
-                            <h3 className="text-lg font-medium">
+                        <div className="flex flex-col gap-2 md:gap-3">
+                            <h3 className="text-base md:text-lg font-medium">
                                 Màu sắc:{" "}
                                 {selectedColor && (
-                                    <span className="text-gray-600 font-normal">
+                                    <span className="text-gray-600 font-normal text-sm md:text-base">
                                         {getColorName(selectedColor)}
                                     </span>
                                 )}
                             </h3>
-                            <div className="flex gap-3 flex-wrap">
+                            <div className="flex gap-2 md:gap-3 flex-wrap">
                                 {getAllColors().map(
                                     (color: string, index: number) => (
                                         <button
@@ -355,7 +355,7 @@ export default function ProductDetailPage() {
                                             onClick={() =>
                                                 setSelectedColor(color)
                                             }
-                                            className={`w-12 h-12 rounded-full border-2 transition-all duration-200 hover:scale-110 ${
+                                            className={`w-7 h-7 md:w-8 md:h-8 rounded-full border-2 transition-all duration-200 hover:scale-110 ${
                                                 selectedColor === color
                                                     ? "border-black shadow-lg scale-110"
                                                     : "border-gray-300 hover:border-gray-400"
@@ -366,7 +366,7 @@ export default function ProductDetailPage() {
                                             {/* Thêm dấu tick cho màu được chọn */}
                                             {selectedColor === color && (
                                                 <span
-                                                    className={`text-lg font-bold ${
+                                                    className={`text-sm md:text-lg font-bold ${
                                                         color === "#FFFFFF" ||
                                                         color === "#FFFF00" ||
                                                         color === "#FFC0CB"
@@ -384,24 +384,24 @@ export default function ProductDetailPage() {
                         </div>
                     )}
 
-                    <div className="flex gap-4">
+                    <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
                         <button
                             onClick={handleAddToCart}
-                            className="bg-black text-white px-8 py-3 rounded-lg font-medium hover:opacity-90 transition flex items-center gap-2"
+                            className="bg-black text-white px-6 md:px-8 py-3 rounded-lg font-medium hover:opacity-90 transition flex items-center justify-center gap-2 text-sm md:text-base"
                         >
-                            <ShoppingCart className="w-5 h-5" />
+                            <ShoppingCart className="w-4 h-4 md:w-5 md:h-5" />
                             Thêm vào giỏ
                         </button>
                         <button
                             onClick={handleWishlistClick}
-                            className={`border px-8 py-3 rounded-lg font-medium transition flex items-center gap-2 ${
+                            className={`border px-6 md:px-8 py-3 rounded-lg font-medium transition flex items-center justify-center gap-2 text-sm md:text-base ${
                                 isInWishlist(product.id)
                                     ? "border-red-500 bg-red-500 text-white hover:bg-red-600"
                                     : "border-black hover:bg-black hover:text-white"
                             }`}
                         >
                             <Heart
-                                className={`w-5 h-5 ${
+                                className={`w-4 h-4 md:w-5 md:h-5 ${
                                     isInWishlist(product.id) ? "fill-white" : ""
                                 }`}
                             />
@@ -416,13 +416,13 @@ export default function ProductDetailPage() {
             {/* Modal zoom ảnh */}
             {showImageModal && (
                 <div
-                    className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
+                    className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
                     onClick={() => setShowImageModal(false)}
                 >
-                    <div className="relative max-w-4xl max-h-4xl p-4">
+                    <div className="relative max-w-full max-h-full">
                         <button
                             onClick={() => setShowImageModal(false)}
-                            className="absolute -top-10 right-0 text-white text-2xl hover:opacity-70"
+                            className="absolute -top-8 right-0 text-white text-xl md:text-2xl hover:opacity-70 z-10"
                         >
                             ✕
                         </button>
@@ -439,7 +439,7 @@ export default function ProductDetailPage() {
 
                         {/* Navigation trong modal */}
                         {allImages.length > 1 && (
-                            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+                            <div className="absolute bottom-2 md:bottom-4 left-1/2 transform -translate-x-1/2 flex gap-1 md:gap-2">
                                 {allImages.map(
                                     (_image: string, index: number) => (
                                         <button
@@ -448,7 +448,7 @@ export default function ProductDetailPage() {
                                                 e.stopPropagation();
                                                 setSelectedImageIndex(index);
                                             }}
-                                            className={`w-3 h-3 rounded-full ${
+                                            className={`w-2 h-2 md:w-3 md:h-3 rounded-full ${
                                                 selectedImageIndex === index
                                                     ? "bg-white"
                                                     : "bg-white/50"
@@ -463,24 +463,24 @@ export default function ProductDetailPage() {
             )}
 
             {/* Phần đánh giá và sản phẩm liên quan */}
-            <div className="mt-16 space-y-12">
+            <div className="mt-10 md:mt-16 space-y-8 md:space-y-12">
                 {/* Đánh giá sản phẩm */}
-                <div className="bg-white rounded-lg border border-gray-200 p-8">
-                    <div className="flex items-center justify-between mb-6">
+                <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6 lg:p-8">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 md:mb-6 gap-4">
                         <div>
-                            <h2 className="text-2xl font-semibold mb-2">
+                            <h2 className="text-xl md:text-2xl font-semibold mb-2">
                                 Đánh giá sản phẩm
                             </h2>
                             <div className="flex items-center gap-4">
                                 <div className="flex items-center gap-2">
                                     {renderStars(
                                         Math.round(averageRating),
-                                        "w-5 h-5"
+                                        "w-4 h-4 md:w-5 md:h-5"
                                     )}
-                                    <span className="text-lg font-medium">
+                                    <span className="text-base md:text-lg font-medium">
                                         {averageRating.toFixed(1)}
                                     </span>
-                                    <span className="text-gray-600">
+                                    <span className="text-gray-600 text-sm md:text-base">
                                         ({reviews.length} đánh giá)
                                     </span>
                                 </div>
@@ -488,7 +488,7 @@ export default function ProductDetailPage() {
                         </div>
                         <button
                             onClick={() => setShowReviewForm(!showReviewForm)}
-                            className="bg-black text-white px-6 py-2 rounded-lg hover:opacity-90 transition"
+                            className="bg-black text-white px-4 md:px-6 py-2 rounded-lg hover:opacity-90 transition text-sm md:text-base w-full sm:w-auto"
                         >
                             Viết đánh giá
                         </button>
@@ -498,17 +498,17 @@ export default function ProductDetailPage() {
                     {showReviewForm && (
                         <form
                             onSubmit={handleSubmitReview}
-                            className="mb-8 p-6 bg-gray-50 rounded-lg"
+                            className="mb-6 md:mb-8 p-4 md:p-6 bg-gray-50 rounded-lg"
                         >
-                            <h3 className="text-lg font-medium mb-4">
+                            <h3 className="text-base md:text-lg font-medium mb-3 md:mb-4">
                                 Viết đánh giá của bạn
                             </h3>
-                            <div className="space-y-4">
+                            <div className="space-y-3 md:space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium mb-2">
+                                    <label className="block text-xs md:text-sm font-medium mb-2">
                                         Đánh giá:
                                     </label>
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-1 md:gap-2">
                                         {[1, 2, 3, 4, 5].map((star) => (
                                             <button
                                                 key={star}
@@ -522,7 +522,7 @@ export default function ProductDetailPage() {
                                                 className="p-1"
                                             >
                                                 <Star
-                                                    className={`w-6 h-6 ${
+                                                    className={`w-5 h-5 md:w-6 md:h-6 ${
                                                         star <= newReview.rating
                                                             ? "text-yellow-400 fill-yellow-400"
                                                             : "text-gray-300"
@@ -533,7 +533,7 @@ export default function ProductDetailPage() {
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium mb-2">
+                                    <label className="block text-xs md:text-sm font-medium mb-2">
                                         Nội dung:
                                     </label>
                                     <textarea
@@ -545,22 +545,22 @@ export default function ProductDetailPage() {
                                             })
                                         }
                                         rows={4}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                                        className="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black text-sm md:text-base"
                                         placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm..."
                                         required
                                     />
                                 </div>
-                                <div className="flex gap-3">
+                                <div className="flex flex-col sm:flex-row gap-2 md:gap-3">
                                     <button
                                         type="submit"
-                                        className="bg-black text-white px-6 py-2 rounded-lg hover:opacity-90 transition"
+                                        className="bg-black text-white px-4 md:px-6 py-2 rounded-lg hover:opacity-90 transition text-sm md:text-base"
                                     >
                                         Gửi đánh giá
                                     </button>
                                     <button
                                         type="button"
                                         onClick={() => setShowReviewForm(false)}
-                                        className="border border-gray-300 px-6 py-2 rounded-lg hover:bg-gray-50 transition"
+                                        className="border border-gray-300 px-4 md:px-6 py-2 rounded-lg hover:bg-gray-50 transition text-sm md:text-base"
                                     >
                                         Hủy
                                     </button>
@@ -570,24 +570,24 @@ export default function ProductDetailPage() {
                     )}
 
                     {/* Danh sách đánh giá */}
-                    <div className="space-y-6">
+                    <div className="space-y-4 md:space-y-6">
                         {reviews.length > 0 ? (
                             reviews.map((review) => (
                                 <div
                                     key={review.id}
-                                    className="border-b border-gray-200 pb-6 last:border-b-0"
+                                    className="border-b border-gray-200 pb-4 md:pb-6 last:border-b-0"
                                 >
-                                    <div className="flex items-start gap-4">
-                                        <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                                            <User className="w-5 h-5 text-gray-600" />
+                                    <div className="flex items-start gap-3 md:gap-4">
+                                        <div className="w-8 h-8 md:w-10 md:h-10 bg-gray-200 rounded-full flex items-center justify-center flex-shrink-0">
+                                            <User className="w-4 h-4 md:w-5 md:h-5 text-gray-600" />
                                         </div>
-                                        <div className="flex-1">
-                                            <div className="flex items-center gap-3 mb-2">
-                                                <span className="font-medium">
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 md:gap-3 mb-2">
+                                                <span className="font-medium text-sm md:text-base">
                                                     {review.userName}
                                                 </span>
-                                                {renderStars(review.rating)}
-                                                <span className="text-sm text-gray-500">
+                                                {renderStars(review.rating, "w-3 h-3 md:w-4 md:h-4")}
+                                                <span className="text-xs md:text-sm text-gray-500">
                                                     {new Date(
                                                         review.createdAt
                                                     ).toLocaleDateString(
@@ -595,7 +595,7 @@ export default function ProductDetailPage() {
                                                     )}
                                                 </span>
                                             </div>
-                                            <p className="text-gray-700 leading-relaxed">
+                                            <p className="text-gray-700 leading-relaxed text-sm md:text-base">
                                                 {review.comment}
                                             </p>
                                         </div>
@@ -603,7 +603,7 @@ export default function ProductDetailPage() {
                                 </div>
                             ))
                         ) : (
-                            <div className="text-center py-8 text-gray-500">
+                            <div className="text-center py-6 md:py-8 text-gray-500 text-sm md:text-base">
                                 Chưa có đánh giá nào cho sản phẩm này
                             </div>
                         )}
@@ -613,17 +613,17 @@ export default function ProductDetailPage() {
                 {/* Sản phẩm liên quan */}
                 {relatedProducts.length > 0 && (
                     <div>
-                        <h2 className="text-2xl font-semibold mb-6">
+                        <h2 className="text-xl md:text-2xl font-semibold mb-4 md:mb-6">
                             Sản phẩm liên quan
                         </h2>
-                        <div className="grid grid-cols-5 gap-6">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-6">
                             {relatedProducts.map((relatedProduct) => (
                                 <div
                                     key={relatedProduct.id}
                                     className="group cursor-pointer"
                                 >
                                     <div
-                                        className="bg-[#f6f6f6] rounded-lg p-4 mb-4 aspect-square flex items-center justify-center group-hover:opacity-90 transition"
+                                        className="bg-white rounded-t p-2 md:p-4 aspect-square flex items-center justify-center group-hover:opacity-90 transition"
                                         onClick={() =>
                                             navigate(
                                                 `/products/${relatedProduct.id}`
@@ -646,9 +646,9 @@ export default function ProductDetailPage() {
                                             }}
                                         />
                                     </div>
-                                    <div className="text-center">
+                                    <div className="text-center bg-white rounded-b p-2 md:p-0">
                                         <h3
-                                            className="font-medium text-gray-900 mb-2 line-clamp-2 group-hover:text-black transition cursor-pointer"
+                                            className="font-medium text-gray-900 mb-1 md:mb-2 line-clamp-2 group-hover:text-black transition cursor-pointer text-xs md:text-sm lg:text-base"
                                             onClick={() =>
                                                 navigate(
                                                     `/products/${relatedProduct.id}`
@@ -657,7 +657,7 @@ export default function ProductDetailPage() {
                                         >
                                             {relatedProduct.name}
                                         </h3>
-                                        <p className="text-lg font-semibold">
+                                        <p className="text-sm md:text-base lg:text-lg font-semibold">
                                             {Number(
                                                 relatedProduct.price
                                             ).toLocaleString("vi-VN")}{" "}

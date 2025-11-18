@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../../shared/api";
-import { Plus, Edit, Trash2, X, Save, Upload, Image } from "lucide-react";
+import { Plus, Edit, Trash2, X, Save, Upload, Image, ChevronLeft, ChevronRight } from "lucide-react";
 
 type Product = {
     id: number;
@@ -26,6 +26,12 @@ export default function AdminProductsPage() {
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+    
+    // Pagination states
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalProducts, setTotalProducts] = useState(0);
+    const pageSize = 10;
     const [formData, setFormData] = useState({
         name: "",
         description: "",
@@ -82,16 +88,24 @@ export default function AdminProductsPage() {
 
     useEffect(() => {
         loadData();
-    }, []);
+    }, [currentPage]);
 
     const loadData = async () => {
         try {
             const [productsRes, categoriesRes] = await Promise.all([
-                api.get("/products", { params: { pageSize: 100 } }),
+                api.get("/products", { 
+                    params: { 
+                        page: currentPage, 
+                        pageSize: pageSize 
+                    } 
+                }),
                 api.get("/categories"),
             ]);
+            
             setProducts(productsRes.data.items || []);
             setCategories(categoriesRes.data || []);
+            setTotalProducts(productsRes.data.total || 0);
+            setTotalPages(Math.ceil((productsRes.data.total || 0) / pageSize));
         } catch (error) {
             console.error(error);
             alert("Lỗi khi tải dữ liệu");
@@ -284,6 +298,8 @@ export default function AdminProductsPage() {
             } else {
                 await api.post("/products", payload);
                 alert("Tạo sản phẩm thành công");
+                // Go to first page when creating new product
+                setCurrentPage(1);
             }
             setShowModal(false);
             loadData();
@@ -298,7 +314,13 @@ export default function AdminProductsPage() {
         try {
             await api.delete(`/products/${id}`);
             alert("Xóa sản phẩm thành công");
-            loadData();
+            
+            // If this is the last item on current page and not the first page, go to previous page
+            if (products.length === 1 && currentPage > 1) {
+                setCurrentPage(prev => prev - 1);
+            } else {
+                loadData();
+            }
         } catch (error: any) {
             console.error('Delete error:', error);
             const errorMessage = error.response?.data?.message || "Lỗi khi xóa sản phẩm";
@@ -443,6 +465,76 @@ export default function AdminProductsPage() {
                     </tbody>
                 </table>
             </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+                <div className="mt-6 flex items-center justify-between">
+                    <div className="text-sm text-gray-700">
+                        Hiển thị  {totalProducts} sản phẩm
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => setCurrentPage(1)}
+                            disabled={currentPage === 1}
+                            className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-l-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            Đầu
+                        </button>
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                            disabled={currentPage === 1}
+                            className="px-2 py-2 text-sm font-medium text-gray-500 bg-white border-t border-b border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                        >
+                            <ChevronLeft className="w-4 h-4" />
+                        </button>
+                        
+                        {/* Page numbers */}
+                        <div className="flex items-center">
+                            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                let pageNum;
+                                if (totalPages <= 5) {
+                                    pageNum = i + 1;
+                                } else if (currentPage <= 3) {
+                                    pageNum = i + 1;
+                                } else if (currentPage >= totalPages - 2) {
+                                    pageNum = totalPages - 4 + i;
+                                } else {
+                                    pageNum = currentPage - 2 + i;
+                                }
+                                
+                                return (
+                                    <button
+                                        key={pageNum}
+                                        onClick={() => setCurrentPage(pageNum)}
+                                        className={`px-3 py-2 text-sm font-medium border-t border-b border-gray-300 ${
+                                            currentPage === pageNum
+                                                ? 'bg-black text-white border-black'
+                                                : 'bg-white text-gray-500 hover:bg-gray-50'
+                                        }`}
+                                    >
+                                        {pageNum}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                            disabled={currentPage === totalPages}
+                            className="px-2 py-2 text-sm font-medium text-gray-500 bg-white border-t border-b border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                        >
+                            <ChevronRight className="w-4 h-4" />
+                        </button>
+                        <button
+                            onClick={() => setCurrentPage(totalPages)}
+                            disabled={currentPage === totalPages}
+                            className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-r-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            Cuối
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {/* Modal */}
             {showModal && (

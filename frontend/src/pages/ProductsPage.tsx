@@ -74,21 +74,21 @@ export default function ProductsPage() {
     const parentCategories = categories.filter((cat) => !cat.parentId);
 
     return (
-        <div className="container mx-auto px-40 py-10">
+        <div className="container mx-auto px-4 sm:px-8 md:px-16 lg:px-40 py-6 md:py-10">
             <Breadcrumb items={[{ label: "Sản phẩm" }]} />
-            <h1 className="text-4xl font-semibold mb-8">Sản phẩm</h1>
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold mb-6 md:mb-8">Sản phẩm</h1>
 
-            <div className="flex gap-8">
+            <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
                 {/* Sidebar danh mục */}
-                <div className="w-64 bg-white border border-gray-200 rounded-lg p-6 h-fit">
-                    <h3 className="text-lg font-semibold mb-4">Danh mục</h3>
-                    <div className="space-y-2">
+                <div className="w-full lg:w-64 bg-white border border-gray-200 rounded-lg p-4 md:p-6 h-fit mb-6 lg:mb-0">
+                    <h3 className="text-base md:text-lg font-semibold mb-3 md:mb-4">Danh mục</h3>
+                    <div className="space-y-1 md:space-y-2">
                         <button
                             onClick={() => {
                                 setSelectedCategory("");
                                 setExpandedCategories(new Set<number>());
                             }}
-                            className={`w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 transition ${
+                            className={`w-full text-left px-2 md:px-3 py-2 text-sm md:text-base rounded-lg hover:bg-gray-100 transition ${
                                 selectedCategory === ""
                                     ? "bg-gray-100 font-medium"
                                     : ""
@@ -141,7 +141,7 @@ export default function ProductsPage() {
                                                 }
                                             }
                                         }}
-                                        className={`flex-1 text-left px-3 py-2 rounded-lg hover:bg-gray-100 transition ${
+                                        className={`flex-1 text-left px-2 md:px-3 py-2 text-sm md:text-base rounded-lg hover:bg-gray-100 transition ${
                                             selectedCategory ===
                                             category.id.toString()
                                                 ? "bg-gray-100 font-medium"
@@ -161,9 +161,9 @@ export default function ProductsPage() {
                                                 {expandedCategories.has(
                                                     category.id
                                                 ) ? (
-                                                    <ChevronDown className="w-4 h-4 text-gray-500" />
+                                                    <ChevronDown className="w-3 h-3 md:w-4 md:h-4 text-gray-500" />
                                                 ) : (
-                                                    <ChevronRight className="w-4 h-4 text-gray-500" />
+                                                    <ChevronRight className="w-3 h-3 md:w-4 md:h-4 text-gray-500" />
                                                 )}
                                             </button>
                                         )}
@@ -171,7 +171,7 @@ export default function ProductsPage() {
                                 {/* Danh mục con */}
                                 {expandedCategories.has(category.id) &&
                                     category.children && (
-                                        <div className="ml-4 mt-2 space-y-1">
+                                        <div className="ml-3 md:ml-4 mt-2 space-y-1">
                                             {category.children.map(
                                                 (child: any) => (
                                                     <button
@@ -181,7 +181,7 @@ export default function ProductsPage() {
                                                                 child.id.toString()
                                                             )
                                                         }
-                                                        className={`w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-gray-100 transition ${
+                                                        className={`w-full text-left px-2 md:px-3 py-2 text-xs md:text-sm rounded-lg hover:bg-gray-100 transition ${
                                                             selectedCategory ===
                                                             child.id.toString()
                                                                 ? "bg-gray-100 font-medium"
@@ -202,13 +202,18 @@ export default function ProductsPage() {
                 {/* Nội dung chính */}
                 <div className="flex-1">
                     {/* Bộ lọc */}
-                    <div className="flex justify-end gap-4 mb-8">
+                    <div className="flex flex-col sm:flex-row justify-between sm:justify-end gap-4 mb-6 md:mb-8">
+                        {/* Thông tin tổng sản phẩm */}
+                        <div className="flex items-center text-sm md:text-base text-gray-600">
+                            Hiển thị {products.length} trong số {totalProducts} sản phẩm
+                        </div>
+                        
                         {/* Sắp xếp theo giá */}
                         <div className="relative">
                             <select
                                 value={sortBy}
                                 onChange={(e) => setSortBy(e.target.value)}
-                                className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-3 pr-10 text-sm font-medium text-gray-700 hover:border-gray-400 focus:outline-none focus:border-black cursor-pointer"
+                                className="appearance-none bg-white border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 pr-8 md:pr-10 text-xs md:text-sm font-medium text-gray-700 hover:border-gray-400 focus:outline-none focus:border-black cursor-pointer w-full sm:w-auto"
                             >
                                 <option value="">Sắp xếp theo</option>
                                 <option value="price_asc">
@@ -220,20 +225,20 @@ export default function ProductsPage() {
                                 <option value="name_asc">Tên: A-Z</option>
                                 <option value="name_desc">Tên: Z-A</option>
                             </select>
-                            <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+                            <ChevronDown className="absolute right-2 md:right-3 top-1/2 transform -translate-y-1/2 w-3 h-3 md:w-4 md:h-4 text-gray-500 pointer-events-none" />
                         </div>
                     </div>
 
                     {loading ? (
-                        <div className="text-center py-20">Đang tải...</div>
+                        <div className="text-center py-12 md:py-20 text-sm md:text-base">Đang tải...</div>
                     ) : products.length === 0 ? (
-                        <div className="text-center py-20 text-gray-500">
+                        <div className="text-center py-12 md:py-20 text-gray-500 text-sm md:text-base">
                             Không tìm thấy sản phẩm
                         </div>
                     ) : (
                         <>
-                            {/* Grid 4 sản phẩm trên một hàng */}
-                            <div className="grid grid-cols-4 gap-6 mb-8">
+                            {/* Grid responsive: 1→2→3→4 cột */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
                                 {products.map((product) => (
                                     <ProductCard
                                         key={product.id}
@@ -244,40 +249,59 @@ export default function ProductsPage() {
 
                             {/* Phân trang */}
                             {totalPages > 1 && (
-                                <div className="flex justify-center items-center gap-2">
+                                <div className="flex flex-wrap justify-center items-center gap-1 md:gap-2">
                                     <button
                                         onClick={() =>
                                             setCurrentPage(currentPage - 1)
                                         }
                                         disabled={currentPage === 1}
-                                        className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="px-3 md:px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed text-xs md:text-sm"
                                     >
                                         Trước
                                     </button>
 
-                                    {Array.from(
-                                        { length: totalPages },
-                                        (_, i) => i + 1
-                                    ).map((page) => (
-                                        <button
-                                            key={page}
-                                            onClick={() => setCurrentPage(page)}
-                                            className={`px-4 py-2 border rounded-lg ${
-                                                currentPage === page
-                                                    ? "bg-black text-white border-black"
-                                                    : "border-gray-300 hover:bg-gray-100"
-                                            }`}
-                                        >
-                                            {page}
-                                        </button>
-                                    ))}
+                                    {/* Hiển thị số trang thông minh cho mobile */}
+                                    {(() => {
+                                        const showPages = [];
+                                        const maxPagesToShow = window.innerWidth < 640 ? 3 : totalPages;
+                                        
+                                        if (totalPages <= maxPagesToShow) {
+                                            // Hiển thị tất cả nếu ít trang
+                                            for (let i = 1; i <= totalPages; i++) {
+                                                showPages.push(i);
+                                            }
+                                        } else {
+                                            // Logic phân trang thông minh cho mobile
+                                            if (currentPage <= 2) {
+                                                showPages.push(1, 2, 3);
+                                            } else if (currentPage >= totalPages - 1) {
+                                                showPages.push(totalPages - 2, totalPages - 1, totalPages);
+                                            } else {
+                                                showPages.push(currentPage - 1, currentPage, currentPage + 1);
+                                            }
+                                        }
+                                        
+                                        return showPages.map((page) => (
+                                            <button
+                                                key={page}
+                                                onClick={() => setCurrentPage(page)}
+                                                className={`px-3 md:px-4 py-2 border rounded-lg text-xs md:text-sm ${
+                                                    currentPage === page
+                                                        ? "bg-black text-white border-black"
+                                                        : "border-gray-300 hover:bg-gray-100"
+                                                }`}
+                                            >
+                                                {page}
+                                            </button>
+                                        ));
+                                    })()}
 
                                     <button
                                         onClick={() =>
                                             setCurrentPage(currentPage + 1)
                                         }
                                         disabled={currentPage === totalPages}
-                                        className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="px-3 md:px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed text-xs md:text-sm"
                                     >
                                         Tiếp
                                     </button>

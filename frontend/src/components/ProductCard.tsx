@@ -90,7 +90,7 @@ export default function ProductCard({ product }: ProductCardProps) {
     };
 
     return (
-        <div className="bg-[#f6f6f6] rounded-lg min-w-[200px] flex flex-col items-center relative">
+        <div className="bg-white rounded-lg min-w-[200px] flex flex-col items-center relative">
             {/* Icon trái tim ở góc bên phải của card */}
             <div className="absolute top-2 right-2 z-10">
                 <Heart
@@ -121,11 +121,11 @@ export default function ProductCard({ product }: ProductCardProps) {
                     <div className="flex flex-col gap-4 items-start w-full">
                         <Link
                             to={`/products/${product.id}`}
-                            className="text-base font-medium text-black text-center w-full hover:underline"
+                            className="whitespace-nowrap text-base font-medium text-black text-center w-full hover:underline"
                         >
                             {product.name}
                         </Link>
-                        <p className="text-2xl font-semibold text-black tracking-wide">
+                        <p className="text-2xl font-semibold text-black tracking-wide text-center w-full">
                             {Number(product.price).toLocaleString("vi-VN")} ₫
                         </p>
                     </div>

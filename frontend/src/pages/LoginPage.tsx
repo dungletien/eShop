@@ -33,9 +33,9 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex">
+        <div className="min-h-screen flex flex-col lg:flex-row">
             {/* Left side - Image */}
-            <div className="flex-1 bg-white flex justify-center items-center">
+            <div className="hidden lg:flex lg:flex-1 bg-white justify-center items-center">
                 <img
                     src="https://media.istockphoto.com/id/1281150061/vector/register-account-submit-access-login-password-username-internet-online-website-concept.jpg?s=612x612&w=0&k=20&c=9HWSuA9IaU4o-CK6fALBS5eaO1ubnsM08EOYwgbwGBo="
                     alt="background"
@@ -44,21 +44,21 @@ export default function LoginPage() {
             </div>
 
             {/* Right side - Form */}
-            <div className="flex-1 flex items-center justify-center bg-white">
-                <div className="max-w-md w-full px-8">
-                    <h2 className="text-3xl font-semibold mb-8 text-gray-900 text-center">
+            <div className="flex-1 flex items-center justify-center bg-white px-4 sm:px-6 lg:px-8 py-8 lg:py-0">
+                <div className="max-w-md w-full">
+                    <h2 className="text-2xl sm:text-3xl font-semibold mb-6 md:mb-8 text-gray-900 text-center">
                         Đăng nhập
                     </h2>
 
                     {error && (
-                        <div className="bg-red-50 border border-red-200 text-red-600 p-4 rounded-lg mb-6">
+                        <div className="bg-red-50 border border-red-200 text-red-600 p-3 md:p-4 rounded-lg mb-4 md:mb-6 text-sm md:text-base">
                             {error}
                         </div>
                     )}
 
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                    <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">
                                 Email
                             </label>
                             <input
@@ -66,13 +66,13 @@ export default function LoginPage() {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                className="w-full px-3 md:px-4 py-2 md:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition text-sm md:text-base"
                                 placeholder="Nhập email của bạn"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">
                                 Mật khẩu
                             </label>
                             <input
@@ -80,21 +80,21 @@ export default function LoginPage() {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                className="w-full px-3 md:px-4 py-2 md:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition text-sm md:text-base"
                                 placeholder="Nhập mật khẩu của bạn"
                             />
                         </div>
 
                         <button
                             type="submit"
-                            className="w-full bg-black text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition duration-200"
+                            className="w-full bg-black text-white py-2 md:py-3 rounded-lg font-medium hover:bg-gray-800 transition duration-200 text-sm md:text-base"
                         >
                             Đăng nhập
                         </button>
                     </form>
 
-                    <div className="mt-8 text-center">
-                        <p className="text-gray-600">
+                    <div className="mt-6 md:mt-8 text-center">
+                        <p className="text-gray-600 text-sm md:text-base">
                             Chưa có tài khoản?{" "}
                             <Link
                                 to="/register"
@@ -105,10 +105,10 @@ export default function LoginPage() {
                         </p>
                     </div>
 
-                    <div className="mt-6 text-center">
+                    <div className="mt-4 md:mt-6 text-center">
                         <Link
                             to="/"
-                            className="text-gray-500 hover:text-gray-700 transition"
+                            className="text-gray-500 hover:text-gray-700 transition text-sm md:text-base"
                         >
                             ← Quay về trang chủ
                         </Link>

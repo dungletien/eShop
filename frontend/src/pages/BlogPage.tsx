@@ -85,7 +85,7 @@ export default function BlogPage() {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            <div className="container mx-auto px-40 py-10">
+            <div className="container mx-auto px-4 sm:px-8 md:px-16 lg:px-40 py-6 md:py-10">
                 <Breadcrumb
                     items={[
                         { label: "Blog" },
@@ -93,36 +93,36 @@ export default function BlogPage() {
                 />
 
                 {/* Header */}
-                <div className="text-center mb-10">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-4">Blog Cyber Store</h1>
-                    <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                <div className="text-center mb-8 md:mb-10">
+                    <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 md:mb-4">Blog Cyber Store</h1>
+                    <p className="text-sm md:text-base lg:text-lg text-gray-600 max-w-2xl mx-auto px-4">
                         Khám phá những xu hướng công nghệ mới nhất, hướng dẫn sử dụng sản phẩm và 
                         những bài review chi tiết từ đội ngũ chuyên gia của chúng tôi.
                     </p>
                 </div>
 
                 {/* Search and Filter */}
-                <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-                    <div className="flex flex-col md:flex-row gap-4 justify-between items-center">
+                <div className="bg-white rounded-lg shadow-sm p-4 md:p-6 mb-6 md:mb-8">
+                    <div className="flex flex-col gap-4">
                         {/* Search */}
-                        <div className="relative flex-1 max-w-md">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                        <div className="relative w-full">
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 md:w-5 md:h-5" />
                             <input
                                 type="text"
                                 placeholder="Tìm kiếm bài viết..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full pl-9 md:pl-10 pr-4 py-2 md:py-3 border border-gray-300 focus:border-black rounded-lg focus:outline-none focus:ring-0 text-sm md:text-base"
                             />
                         </div>
 
                         {/* Categories */}
-                        <div className="flex gap-2 flex-wrap">
+                        <div className="flex gap-2 flex-wrap justify-center md:justify-start">
                             {categories.map(category => (
                                 <button
                                     key={category}
                                     onClick={() => setSelectedCategory(category)}
-                                    className={`px-4 py-2 rounded-full text-sm font-medium transition ${
+                                    className={`px-3 md:px-4 py-1 md:py-2 rounded-full text-xs md:text-sm font-medium transition ${
                                         selectedCategory === category
                                             ? "bg-black text-white"
                                             : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -137,43 +137,43 @@ export default function BlogPage() {
 
                 {/* Featured Post */}
                 {featuredPost && selectedCategory === "Tất cả" && !searchTerm && (
-                    <div className="bg-white rounded-lg shadow-sm overflow-hidden mb-8">
+                    <div className="bg-white rounded-lg shadow-sm overflow-hidden mb-6 md:mb-8">
                         <div className="grid grid-cols-1 lg:grid-cols-2">
-                            <div className="bg-gray-200 h-64 lg:h-auto flex items-center justify-center">
+                            <div className="bg-gray-200 h-48 md:h-64 lg:h-auto flex items-center justify-center order-1 lg:order-1">
                                 <img 
                                     src={featuredPost.image} 
                                     alt={featuredPost.title}
                                     className="w-full h-full object-cover"
                                 />
                             </div>
-                            <div className="p-8">
-                                <div className="flex items-center gap-4 mb-4">
-                                    <span className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs font-medium">
+                            <div className="p-4 md:p-6 lg:p-8 order-2 lg:order-2">
+                                <div className="flex items-center gap-2 md:gap-4 mb-3 md:mb-4">
+                                    <span className="bg-red-100 text-red-800 px-2 md:px-3 py-1 rounded-full text-xs font-medium">
                                         Nổi bật
                                     </span>
-                                    <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium">
+                                    <span className="bg-blue-100 text-blue-800 px-2 md:px-3 py-1 rounded-full text-xs font-medium">
                                         {featuredPost.category}
                                     </span>
                                 </div>
-                                <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                                <h2 className="text-lg md:text-xl lg:text-2xl font-bold text-gray-900 mb-3 md:mb-4">
                                     {featuredPost.title}
                                 </h2>
-                                <p className="text-gray-600 mb-6">
+                                <p className="text-sm md:text-base text-gray-600 mb-4 md:mb-6">
                                     {featuredPost.excerpt}
                                 </p>
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-4 text-sm text-gray-500">
+                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                                    <div className="flex items-center gap-3 md:gap-4 text-xs md:text-sm text-gray-500">
                                         <div className="flex items-center gap-1">
-                                            <User className="w-4 h-4" />
-                                            {featuredPost.author}
+                                            <User className="w-3 h-3 md:w-4 md:h-4" />
+                                            <span className="truncate">{featuredPost.author}</span>
                                         </div>
                                         <div className="flex items-center gap-1">
-                                            <Calendar className="w-4 h-4" />
-                                            {new Date(featuredPost.date).toLocaleDateString('vi-VN')}
+                                            <Calendar className="w-3 h-3 md:w-4 md:h-4" />
+                                            <span className="truncate">{new Date(featuredPost.date).toLocaleDateString('vi-VN')}</span>
                                         </div>
                                     </div>
-                                    <button className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium">
-                                        Đọc tiếp <ArrowRight className="w-4 h-4" />
+                                    <button className="flex items-center justify-center gap-2 text-blue-600 hover:text-blue-800 font-medium text-sm md:text-base">
+                                        Đọc tiếp <ArrowRight className="w-3 h-3 md:w-4 md:h-4" />
                                     </button>
                                 </div>
                             </div>
@@ -182,41 +182,41 @@ export default function BlogPage() {
                 )}
 
                 {/* Blog Posts Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                     {regularPosts.map(post => (
                         <article key={post.id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition">
-                            <div className="bg-gray-200 h-48 flex items-center justify-center">
+                            <div className="bg-gray-200 h-40 md:h-48 flex items-center justify-center">
                                 <img 
                                     src={post.image} 
                                     alt={post.title}
                                     className="w-full h-full object-cover"
                                 />
                             </div>
-                            <div className="p-6">
-                                <div className="flex items-center gap-2 mb-3">
+                            <div className="p-4 md:p-6">
+                                <div className="flex items-center gap-2 mb-2 md:mb-3">
                                     <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1">
                                         <Tag className="w-3 h-3" />
                                         {post.category}
                                     </span>
                                 </div>
-                                <h3 className="text-lg font-semibold text-gray-900 mb-3 line-clamp-2">
+                                <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2 md:mb-3 line-clamp-2">
                                     {post.title}
                                 </h3>
-                                <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                                <p className="text-gray-600 text-xs md:text-sm mb-3 md:mb-4 line-clamp-3">
                                     {post.excerpt}
                                 </p>
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-4 text-xs text-gray-500">
+                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                    <div className="flex items-center gap-3 md:gap-4 text-xs text-gray-500">
                                         <div className="flex items-center gap-1">
                                             <User className="w-3 h-3" />
-                                            {post.author}
+                                            <span className="truncate">{post.author}</span>
                                         </div>
                                         <div className="flex items-center gap-1">
                                             <Calendar className="w-3 h-3" />
-                                            {new Date(post.date).toLocaleDateString('vi-VN')}
+                                            <span className="truncate">{new Date(post.date).toLocaleDateString('vi-VN')}</span>
                                         </div>
                                     </div>
-                                    <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                    <button className="text-blue-600 hover:text-blue-800 text-xs md:text-sm font-medium text-right sm:text-center">
                                         Đọc tiếp
                                     </button>
                                 </div>
@@ -227,8 +227,8 @@ export default function BlogPage() {
 
                 {/* No results */}
                 {filteredPosts.length === 0 && (
-                    <div className="text-center py-12">
-                        <p className="text-gray-500 text-lg">
+                    <div className="text-center py-8 md:py-12 px-4">
+                        <p className="text-gray-500 text-sm md:text-base lg:text-lg">
                             Không tìm thấy bài viết nào phù hợp với từ khóa "{searchTerm}" 
                             {selectedCategory !== "Tất cả" && ` trong danh mục "${selectedCategory}"`}.
                         </p>
@@ -237,8 +237,8 @@ export default function BlogPage() {
 
                 {/* Load More Button */}
                 {filteredPosts.length > 0 && (
-                    <div className="text-center mt-12">
-                        <button className="bg-black text-white px-8 py-3 rounded-lg font-medium hover:opacity-90 transition">
+                    <div className="text-center mt-8 md:mt-12">
+                        <button className="bg-black text-white px-6 md:px-8 py-2 md:py-3 rounded-lg font-medium hover:opacity-90 transition text-sm md:text-base">
                             Xem thêm bài viết
                         </button>
                     </div>
