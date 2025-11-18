@@ -24,7 +24,10 @@ export default function CheckoutPage() {
             } else if (typeof product.colors === "string") {
                 try {
                     const parsedColors = JSON.parse(product.colors);
-                    if (Array.isArray(parsedColors) && parsedColors.length > 0) {
+                    if (
+                        Array.isArray(parsedColors) &&
+                        parsedColors.length > 0
+                    ) {
                         return parsedColors;
                     }
                 } catch {
@@ -39,7 +42,7 @@ export default function CheckoutPage() {
     const getColorName = (colorHex: string): string => {
         const colorMap: { [key: string]: string } = {
             "#000000": "Đen",
-            "#FFFFFF": "Trắng", 
+            "#FFFFFF": "Trắng",
             "#FF0000": "Đỏ",
             "#0000FF": "Xanh dương",
             "#00FF00": "Xanh lá",
@@ -347,7 +350,10 @@ export default function CheckoutPage() {
                                         {/* Danh sách sản phẩm */}
                                         <div className="space-y-3 mb-4 max-h-60 overflow-y-auto">
                                             {cartItems.map((item) => {
-                                                const productColors = getProductColors(item.product);
+                                                const productColors =
+                                                    getProductColors(
+                                                        item.product
+                                                    );
                                                 return (
                                                     <div
                                                         key={item.id}
@@ -355,17 +361,23 @@ export default function CheckoutPage() {
                                                     >
                                                         <div className="flex-1">
                                                             <h4 className="text-sm font-medium text-gray-900 line-clamp-1">
-                                                                {item.product?.name}
+                                                                {
+                                                                    item.product
+                                                                        ?.name
+                                                                }
                                                             </h4>
                                                             <div className="flex items-center gap-2 text-xs text-gray-600">
                                                                 <span>
                                                                     Số lượng:{" "}
-                                                                    {item.quantity}
+                                                                    {
+                                                                        item.quantity
+                                                                    }
                                                                 </span>
                                                                 <span>•</span>
                                                                 <span>
                                                                     {Number(
-                                                                        item.product
+                                                                        item
+                                                                            .product
                                                                             ?.price ||
                                                                             0
                                                                     ).toLocaleString(
@@ -375,21 +387,44 @@ export default function CheckoutPage() {
                                                                 </span>
                                                             </div>
                                                             {/* Hiển thị màu sắc có sẵn */}
-                                                            {productColors.length > 0 && (
+                                                            {productColors.length >
+                                                                0 && (
                                                                 <div className="flex items-center gap-2 mt-1">
-                                                                    <span className="text-xs text-gray-500">Màu:</span>
+                                                                    <span className="text-xs text-gray-500">
+                                                                        Màu:
+                                                                    </span>
                                                                     <div className="flex items-center gap-1">
-                                                                        {productColors.slice(0, 3).map((color, colorIndex) => (
-                                                                            <div
-                                                                                key={colorIndex}
-                                                                                className="w-3 h-3 rounded-full border border-gray-300"
-                                                                                style={{ backgroundColor: color }}
-                                                                                title={getColorName(color)}
-                                                                            />
-                                                                        ))}
-                                                                        {productColors.length > 3 && (
+                                                                        {productColors
+                                                                            .slice(
+                                                                                0,
+                                                                                3
+                                                                            )
+                                                                            .map(
+                                                                                (
+                                                                                    color,
+                                                                                    colorIndex
+                                                                                ) => (
+                                                                                    <div
+                                                                                        key={
+                                                                                            colorIndex
+                                                                                        }
+                                                                                        className="w-3 h-3 rounded-full border border-gray-300"
+                                                                                        style={{
+                                                                                            backgroundColor:
+                                                                                                color,
+                                                                                        }}
+                                                                                        title={getColorName(
+                                                                                            color
+                                                                                        )}
+                                                                                    />
+                                                                                )
+                                                                            )}
+                                                                        {productColors.length >
+                                                                            3 && (
                                                                             <span className="text-xs text-gray-500">
-                                                                                +{productColors.length - 3}
+                                                                                +
+                                                                                {productColors.length -
+                                                                                    3}
                                                                             </span>
                                                                         )}
                                                                     </div>
@@ -400,8 +435,10 @@ export default function CheckoutPage() {
                                                             {(
                                                                 Number(
                                                                     item.product
-                                                                        ?.price || 0
-                                                                ) * item.quantity
+                                                                        ?.price ||
+                                                                        0
+                                                                ) *
+                                                                item.quantity
                                                             ).toLocaleString(
                                                                 "vi-VN"
                                                             )}

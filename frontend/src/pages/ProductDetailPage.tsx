@@ -613,36 +613,55 @@ export default function ProductDetailPage() {
                 {/* Sản phẩm liên quan */}
                 {relatedProducts.length > 0 && (
                     <div>
-                        <h2 className="text-2xl font-semibold mb-6">Sản phẩm liên quan</h2>
+                        <h2 className="text-2xl font-semibold mb-6">
+                            Sản phẩm liên quan
+                        </h2>
                         <div className="grid grid-cols-5 gap-6">
                             {relatedProducts.map((relatedProduct) => (
-                                <div key={relatedProduct.id} className="group cursor-pointer">
-                                    <div 
+                                <div
+                                    key={relatedProduct.id}
+                                    className="group cursor-pointer"
+                                >
+                                    <div
                                         className="bg-[#f6f6f6] rounded-lg p-4 mb-4 aspect-square flex items-center justify-center group-hover:opacity-90 transition"
-                                        onClick={() => navigate(`/products/${relatedProduct.id}`)}
+                                        onClick={() =>
+                                            navigate(
+                                                `/products/${relatedProduct.id}`
+                                            )
+                                        }
                                     >
                                         <img
                                             src={getImageUrl(
-                                                Array.isArray(relatedProduct.images) 
-                                                    ? relatedProduct.images[0] 
+                                                Array.isArray(
+                                                    relatedProduct.images
+                                                )
+                                                    ? relatedProduct.images[0]
                                                     : relatedProduct.images
                                             )}
                                             alt={relatedProduct.name}
                                             className="max-w-full max-h-full object-contain"
                                             onError={(e) => {
-                                                e.currentTarget.src = "https://via.placeholder.com/200x200?text=No+Image";
+                                                e.currentTarget.src =
+                                                    "https://via.placeholder.com/200x200?text=No+Image";
                                             }}
                                         />
                                     </div>
                                     <div className="text-center">
-                                        <h3 
+                                        <h3
                                             className="font-medium text-gray-900 mb-2 line-clamp-2 group-hover:text-black transition cursor-pointer"
-                                            onClick={() => navigate(`/products/${relatedProduct.id}`)}
+                                            onClick={() =>
+                                                navigate(
+                                                    `/products/${relatedProduct.id}`
+                                                )
+                                            }
                                         >
                                             {relatedProduct.name}
                                         </h3>
                                         <p className="text-lg font-semibold">
-                                            {Number(relatedProduct.price).toLocaleString("vi-VN")} ₫
+                                            {Number(
+                                                relatedProduct.price
+                                            ).toLocaleString("vi-VN")}{" "}
+                                            ₫
                                         </p>
                                     </div>
                                 </div>

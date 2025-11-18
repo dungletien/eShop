@@ -37,7 +37,8 @@ export default function AdminProductsPage() {
     const [selectedColors, setSelectedColors] = useState<string[]>([]);
     const [uploadedImages, setUploadedImages] = useState<string[]>([]);
     const [uploading, setUploading] = useState(false);
-    const [selectedParentCategory, setSelectedParentCategory] = useState<number>(0);
+    const [selectedParentCategory, setSelectedParentCategory] =
+        useState<number>(0);
     const [childCategories, setChildCategories] = useState<Category[]>([]);
 
     // Danh sách màu sắc có sẵn
@@ -100,7 +101,7 @@ export default function AdminProductsPage() {
     };
 
     const handleCreate = () => {
-        const parentCategories = categories.filter(cat => !cat.parentId);
+        const parentCategories = categories.filter((cat) => !cat.parentId);
         setEditingProduct(null);
         setFormData({
             name: "",
@@ -164,15 +165,19 @@ export default function AdminProductsPage() {
         }
 
         // Xác định danh mục cha và con
-        const selectedCategory = categories.find(cat => cat.id === product.categoryId);
+        const selectedCategory = categories.find(
+            (cat) => cat.id === product.categoryId
+        );
         let parentCategoryId = 0;
         let childCategoriesList: Category[] = [];
-        
+
         if (selectedCategory) {
             if (selectedCategory.parentId) {
                 // Nếu là danh mục con
                 parentCategoryId = selectedCategory.parentId;
-                const parentCategory = categories.find(cat => cat.id === selectedCategory.parentId);
+                const parentCategory = categories.find(
+                    (cat) => cat.id === selectedCategory.parentId
+                );
                 if (parentCategory && parentCategory.children) {
                     childCategoriesList = parentCategory.children;
                 }
@@ -235,7 +240,7 @@ export default function AdminProductsPage() {
 
     const handleColorToggle = (colorValue: string) => {
         if (selectedColors.includes(colorValue)) {
-            setSelectedColors(selectedColors.filter(c => c !== colorValue));
+            setSelectedColors(selectedColors.filter((c) => c !== colorValue));
         } else {
             setSelectedColors([...selectedColors, colorValue]);
         }
@@ -244,9 +249,11 @@ export default function AdminProductsPage() {
     const handleParentCategoryChange = (parentCategoryId: number) => {
         setSelectedParentCategory(parentCategoryId);
         setFormData({ ...formData, categoryId: parentCategoryId });
-        
+
         // Tìm danh mục con của danh mục cha được chọn
-        const parentCategory = categories.find(cat => cat.id === parentCategoryId);
+        const parentCategory = categories.find(
+            (cat) => cat.id === parentCategoryId
+        );
         if (parentCategory && parentCategory.children) {
             setChildCategories(parentCategory.children);
         } else {
@@ -286,13 +293,21 @@ export default function AdminProductsPage() {
     };
 
     const handleDelete = async (id: number) => {
-        if (!confirm("Bạn có chắc muốn xóa sản phẩm này?")) return;
+        if (!confirm("Bạn có chắc muốn xóa sản phẩm này?\n\nLưu ý: Sản phẩm sẽ bị xóa khỏi giỏ hàng và danh sách yêu thích của tất cả người dùng.")) return;
+        
         try {
             await api.delete(`/products/${id}`);
             alert("Xóa sản phẩm thành công");
             loadData();
         } catch (error: any) {
-            alert(error.response?.data?.message || "Lỗi khi xóa sản phẩm");
+            console.error('Delete error:', error);
+            const errorMessage = error.response?.data?.message || "Lỗi khi xóa sản phẩm";
+            alert(errorMessage);
+            
+            // If the error is about existing orders, suggest alternative action
+            if (errorMessage.includes("đơn hàng")) {
+                alert("Gợi ý: Thay vì xóa, bạn có thể đặt số lượng tồn kho về 0 để ngừng bán sản phẩm này.");
+            }
         }
     };
 
@@ -532,15 +547,26 @@ export default function AdminProductsPage() {
                                         </label>
                                         <select
                                             value={selectedParentCategory}
-                                            onChange={(e) => handleParentCategoryChange(parseInt(e.target.value))}
+                                            onChange={(e) =>
+                                                handleParentCategoryChange(
+                                                    parseInt(e.target.value)
+                                                )
+                                            }
                                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
                                         >
-                                            <option value={0}>Chọn danh mục cha</option>
-                                            {categories.filter(cat => !cat.parentId).map((cat) => (
-                                                <option key={cat.id} value={cat.id}>
-                                                    {cat.name}
-                                                </option>
-                                            ))}
+                                            <option value={0}>
+                                                Chọn danh mục cha
+                                            </option>
+                                            {categories
+                                                .filter((cat) => !cat.parentId)
+                                                .map((cat) => (
+                                                    <option
+                                                        key={cat.id}
+                                                        value={cat.id}
+                                                    >
+                                                        {cat.name}
+                                                    </option>
+                                                ))}
                                         </select>
                                     </div>
 
@@ -554,26 +580,34 @@ export default function AdminProductsPage() {
                                             onChange={(e) =>
                                                 setFormData({
                                                     ...formData,
-                                                    categoryId: parseInt(e.target.value),
+                                                    categoryId: parseInt(
+                                                        e.target.value
+                                                    ),
                                                 })
                                             }
-                                            disabled={childCategories.length === 0}
+                                            disabled={
+                                                childCategories.length === 0
+                                            }
                                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-100 disabled:cursor-not-allowed"
                                         >
-                                            <option value={selectedParentCategory}>
-                                                {selectedParentCategory === 0 
-                                                    ? "Chọn danh mục cha trước" 
+                                            <option
+                                                value={selectedParentCategory}
+                                            >
+                                                {selectedParentCategory === 0
+                                                    ? "Chọn danh mục cha trước"
                                                     : "Sử dụng danh mục cha"}
                                             </option>
                                             {childCategories.map((cat) => (
-                                                <option key={cat.id} value={cat.id}>
+                                                <option
+                                                    key={cat.id}
+                                                    value={cat.id}
+                                                >
                                                     {cat.name}
                                                 </option>
                                             ))}
                                         </select>
                                     </div>
                                 </div>
-
                             </div>
 
                             <div>
@@ -585,20 +619,31 @@ export default function AdminProductsPage() {
                                         <div
                                             key={color.value}
                                             className={`relative border-2 rounded-lg p-3 cursor-pointer transition ${
-                                                selectedColors.includes(color.value)
+                                                selectedColors.includes(
+                                                    color.value
+                                                )
                                                     ? "border-black bg-gray-50"
                                                     : "border-gray-200 hover:border-gray-300"
                                             }`}
-                                            onClick={() => handleColorToggle(color.value)}
+                                            onClick={() =>
+                                                handleColorToggle(color.value)
+                                            }
                                         >
                                             <div className="flex items-center gap-2">
                                                 <div
                                                     className="w-6 h-6 rounded-full border border-gray-300"
-                                                    style={{ backgroundColor: color.value }}
+                                                    style={{
+                                                        backgroundColor:
+                                                            color.value,
+                                                    }}
                                                 ></div>
-                                                <span className="text-sm font-medium">{color.name}</span>
+                                                <span className="text-sm font-medium">
+                                                    {color.name}
+                                                </span>
                                             </div>
-                                            {selectedColors.includes(color.value) && (
+                                            {selectedColors.includes(
+                                                color.value
+                                            ) && (
                                                 <div className="absolute top-1 right-1 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
                                                     ✓
                                                 </div>
@@ -609,11 +654,18 @@ export default function AdminProductsPage() {
                                 {selectedColors.length > 0 && (
                                     <div className="mt-3">
                                         <p className="text-sm text-gray-600">
-                                            Đã chọn {selectedColors.length} màu: {" "}
-                                            {selectedColors.map(colorValue => {
-                                                const color = availableColors.find(c => c.value === colorValue);
-                                                return color?.name;
-                                            }).join(", ")}
+                                            Đã chọn {selectedColors.length} màu:{" "}
+                                            {selectedColors
+                                                .map((colorValue) => {
+                                                    const color =
+                                                        availableColors.find(
+                                                            (c) =>
+                                                                c.value ===
+                                                                colorValue
+                                                        );
+                                                    return color?.name;
+                                                })
+                                                .join(", ")}
                                         </p>
                                     </div>
                                 )}

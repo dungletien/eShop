@@ -52,10 +52,6 @@ export default function WishlistPage() {
                     <div className="text-gray-500 text-lg mb-4">
                         Bạn chưa có sản phẩm yêu thích nào
                     </div>
-                    <p className="text-gray-400 mb-8">
-                        Hãy thêm những sản phẩm bạn thích vào danh sách để xem
-                        sau nhé!
-                    </p>
                     <a
                         href="/products"
                         className="bg-black text-white px-8 py-3 rounded-lg font-medium hover:opacity-90 transition inline-block"

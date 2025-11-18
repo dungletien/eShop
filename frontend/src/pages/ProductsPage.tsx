@@ -10,7 +10,9 @@ export default function ProductsPage() {
     const [selectedCategory, setSelectedCategory] = useState("");
     const [sortBy, setSortBy] = useState("");
     const [loading, setLoading] = useState(true);
-    const [expandedCategories, setExpandedCategories] = useState<Set<number>>(new Set());
+    const [expandedCategories, setExpandedCategories] = useState<Set<number>>(
+        new Set()
+    );
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalProducts, setTotalProducts] = useState(0);
@@ -18,9 +20,9 @@ export default function ProductsPage() {
     const loadProducts = async () => {
         setLoading(true);
         try {
-            const params: any = { 
+            const params: any = {
                 pageSize: 12,
-                page: currentPage 
+                page: currentPage,
             };
             if (selectedCategory) params.categoryId = selectedCategory;
             if (sortBy) params.sortBy = sortBy;
@@ -69,7 +71,7 @@ export default function ProductsPage() {
         setExpandedCategories(newExpanded);
     };
 
-    const parentCategories = categories.filter(cat => !cat.parentId);
+    const parentCategories = categories.filter((cat) => !cat.parentId);
 
     return (
         <div className="container mx-auto px-40 py-10">
@@ -87,7 +89,9 @@ export default function ProductsPage() {
                                 setExpandedCategories(new Set<number>());
                             }}
                             className={`w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 transition ${
-                                selectedCategory === "" ? "bg-gray-100 font-medium" : ""
+                                selectedCategory === ""
+                                    ? "bg-gray-100 font-medium"
+                                    : ""
                             }`}
                         >
                             Tất cả sản phẩm
@@ -97,59 +101,99 @@ export default function ProductsPage() {
                                 <div className="flex items-center">
                                     <button
                                         onClick={() => {
-                                            const isCurrentlySelected = selectedCategory === category.id.toString();
-                                            const isCurrentlyExpanded = expandedCategories.has(category.id);
-                                            
-                                            if (isCurrentlySelected && isCurrentlyExpanded) {
+                                            const isCurrentlySelected =
+                                                selectedCategory ===
+                                                category.id.toString();
+                                            const isCurrentlyExpanded =
+                                                expandedCategories.has(
+                                                    category.id
+                                                );
+
+                                            if (
+                                                isCurrentlySelected &&
+                                                isCurrentlyExpanded
+                                            ) {
                                                 // Nếu đang chọn và đang mở → đóng danh mục con
-                                                const newExpanded = new Set<number>();
-                                                setExpandedCategories(newExpanded);
+                                                const newExpanded =
+                                                    new Set<number>();
+                                                setExpandedCategories(
+                                                    newExpanded
+                                                );
                                             } else {
                                                 // Chọn danh mục mới → đóng tất cả danh mục con khác và mở danh mục này
-                                                setSelectedCategory(category.id.toString());
-                                                if (category.children && category.children.length > 0) {
-                                                    const newExpanded = new Set([category.id]);
-                                                    setExpandedCategories(newExpanded);
+                                                setSelectedCategory(
+                                                    category.id.toString()
+                                                );
+                                                if (
+                                                    category.children &&
+                                                    category.children.length > 0
+                                                ) {
+                                                    const newExpanded = new Set(
+                                                        [category.id]
+                                                    );
+                                                    setExpandedCategories(
+                                                        newExpanded
+                                                    );
                                                 } else {
-                                                    setExpandedCategories(new Set());
+                                                    setExpandedCategories(
+                                                        new Set()
+                                                    );
                                                 }
                                             }
                                         }}
                                         className={`flex-1 text-left px-3 py-2 rounded-lg hover:bg-gray-100 transition ${
-                                            selectedCategory === category.id.toString() ? "bg-gray-100 font-medium" : ""
+                                            selectedCategory ===
+                                            category.id.toString()
+                                                ? "bg-gray-100 font-medium"
+                                                : ""
                                         }`}
                                     >
                                         {category.name}
                                     </button>
-                                    {category.children && category.children.length > 0 && (
-                                        <button
-                                            onClick={() => toggleCategory(category.id)}
-                                            className="p-1 hover:bg-gray-100 rounded"
-                                        >
-                                            {expandedCategories.has(category.id) ? (
-                                                <ChevronDown className="w-4 h-4 text-gray-500" />
-                                            ) : (
-                                                <ChevronRight className="w-4 h-4 text-gray-500" />
-                                            )}
-                                        </button>
-                                    )}
+                                    {category.children &&
+                                        category.children.length > 0 && (
+                                            <button
+                                                onClick={() =>
+                                                    toggleCategory(category.id)
+                                                }
+                                                className="p-1 hover:bg-gray-100 rounded"
+                                            >
+                                                {expandedCategories.has(
+                                                    category.id
+                                                ) ? (
+                                                    <ChevronDown className="w-4 h-4 text-gray-500" />
+                                                ) : (
+                                                    <ChevronRight className="w-4 h-4 text-gray-500" />
+                                                )}
+                                            </button>
+                                        )}
                                 </div>
                                 {/* Danh mục con */}
-                                {expandedCategories.has(category.id) && category.children && (
-                                    <div className="ml-4 mt-2 space-y-1">
-                                        {category.children.map((child: any) => (
-                                            <button
-                                                key={child.id}
-                                                onClick={() => setSelectedCategory(child.id.toString())}
-                                                className={`w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-gray-100 transition ${
-                                                    selectedCategory === child.id.toString() ? "bg-gray-100 font-medium" : ""
-                                                }`}
-                                            >
-                                                {child.name}
-                                            </button>
-                                        ))}
-                                    </div>
-                                )}
+                                {expandedCategories.has(category.id) &&
+                                    category.children && (
+                                        <div className="ml-4 mt-2 space-y-1">
+                                            {category.children.map(
+                                                (child: any) => (
+                                                    <button
+                                                        key={child.id}
+                                                        onClick={() =>
+                                                            setSelectedCategory(
+                                                                child.id.toString()
+                                                            )
+                                                        }
+                                                        className={`w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-gray-100 transition ${
+                                                            selectedCategory ===
+                                                            child.id.toString()
+                                                                ? "bg-gray-100 font-medium"
+                                                                : ""
+                                                        }`}
+                                                    >
+                                                        {child.name}
+                                                    </button>
+                                                )
+                                            )}
+                                        </div>
+                                    )}
                             </div>
                         ))}
                     </div>
@@ -167,8 +211,12 @@ export default function ProductsPage() {
                                 className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-3 pr-10 text-sm font-medium text-gray-700 hover:border-gray-400 focus:outline-none focus:border-black cursor-pointer"
                             >
                                 <option value="">Sắp xếp theo</option>
-                                <option value="price_asc">Giá: Thấp đến cao</option>
-                                <option value="price_desc">Giá: Cao đến thấp</option>
+                                <option value="price_asc">
+                                    Giá: Thấp đến cao
+                                </option>
+                                <option value="price_desc">
+                                    Giá: Cao đến thấp
+                                </option>
                                 <option value="name_asc">Tên: A-Z</option>
                                 <option value="name_desc">Tên: Z-A</option>
                             </select>
@@ -187,7 +235,10 @@ export default function ProductsPage() {
                             {/* Grid 4 sản phẩm trên một hàng */}
                             <div className="grid grid-cols-4 gap-6 mb-8">
                                 {products.map((product) => (
-                                    <ProductCard key={product.id} product={product} />
+                                    <ProductCard
+                                        key={product.id}
+                                        product={product}
+                                    />
                                 ))}
                             </div>
 
@@ -195,14 +246,19 @@ export default function ProductsPage() {
                             {totalPages > 1 && (
                                 <div className="flex justify-center items-center gap-2">
                                     <button
-                                        onClick={() => setCurrentPage(currentPage - 1)}
+                                        onClick={() =>
+                                            setCurrentPage(currentPage - 1)
+                                        }
                                         disabled={currentPage === 1}
                                         className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         Trước
                                     </button>
-                                    
-                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+
+                                    {Array.from(
+                                        { length: totalPages },
+                                        (_, i) => i + 1
+                                    ).map((page) => (
                                         <button
                                             key={page}
                                             onClick={() => setCurrentPage(page)}
@@ -215,9 +271,11 @@ export default function ProductsPage() {
                                             {page}
                                         </button>
                                     ))}
-                                    
+
                                     <button
-                                        onClick={() => setCurrentPage(currentPage + 1)}
+                                        onClick={() =>
+                                            setCurrentPage(currentPage + 1)
+                                        }
                                         disabled={currentPage === totalPages}
                                         className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
                                     >

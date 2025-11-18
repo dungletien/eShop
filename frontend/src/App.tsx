@@ -16,11 +16,18 @@ import AdminOrdersPage from "./pages/admin/AdminOrdersPage";
 import AdminUsersPage from "./pages/admin/AdminUsersPage";
 import AdminCategoriesPage from "./pages/admin/AdminCategoriesPage";
 import WishlistPage from "./pages/WishlistPage";
+import AboutPage from "./pages/AboutPage";
+import ContactPage from "./pages/ContactPage";
+import BlogPage from "./pages/BlogPage";
 
 export default function App() {
     return (
         <Routes>
-            {/* Public Routes */}
+            {/* Auth Routes (without header/footer) */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+
+            {/* Public Routes (with header/footer) */}
             <Route
                 path="/*"
                 element={
@@ -41,6 +48,9 @@ export default function App() {
                                     path="/wishlist"
                                     element={<WishlistPage />}
                                 />
+                                <Route path="/about" element={<AboutPage />} />
+                                <Route path="/contact" element={<ContactPage />} />
+                                <Route path="/blog" element={<BlogPage />} />
                                 <Route path="/cart" element={<CartPage />} />
                                 <Route
                                     path="/checkout"
@@ -49,11 +59,6 @@ export default function App() {
                                 <Route
                                     path="/orders"
                                     element={<OrdersPage />}
-                                />
-                                <Route path="/login" element={<LoginPage />} />
-                                <Route
-                                    path="/register"
-                                    element={<RegisterPage />}
                                 />
                             </Routes>
                         </main>

@@ -3,24 +3,23 @@ import { useEffect, useState } from "react";
 import { api } from "../shared/api";
 import ProductCard from "../components/ProductCard";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import herobanner from '../assets/hero_banner1.png';
 
 export default function HomePage() {
     const [products, setProducts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string>('');
+    const [error, setError] = useState<string>("");
 
     useEffect(() => {
-        console.log('HomePage: Loading products...');
+        console.log("HomePage: Loading products...");
         api.get("/products", { params: { pageSize: 8 } })
             .then((res) => {
-                console.log('HomePage: Products loaded:', res.data);
+                console.log("HomePage: Products loaded:", res.data);
                 setProducts(res.data.items || []);
                 setLoading(false);
             })
             .catch((err) => {
-                console.error('HomePage: Error loading products:', err);
-                setError('Không thể tải sản phẩm');
+                console.error("HomePage: Error loading products:", err);
+                setError("Không thể tải sản phẩm");
                 setLoading(false);
             });
     }, []);
@@ -36,8 +35,8 @@ export default function HomePage() {
     return (
         <div className="w-full">
             {/* Hero Banner */}
-            <section className="bg-[#211c24] text-white py-20">
-                <div className="container mx-auto px-40 flex items-center justify-between relative">
+            <section className="bg-[#211c24] text-white py-20 relative min-h-[600px] overflow-hidden">
+                <div className="container mx-auto px-40 flex items-center justify-between relative z-10">
                     <div className="flex flex-col gap-6 max-w-[400px]">
                         <p className="text-2xl font-semibold opacity-40">
                             Pro.Beyond.
@@ -56,14 +55,13 @@ export default function HomePage() {
                             Shop Now
                         </Link>
                     </div>
-                    <div className="w-[406px] relative">
-                        <img
-                            src={herobanner}
-                            alt="hero_banner1"
-                            className="absolute bottom-0 w-full h-[50%] object-contain"
-                        />
-                    </div>
                 </div>
+
+                <img
+                    src="./src/assets/hero_banner1.png"
+                    alt="iPhone 14 Pro"
+                    className="absolute w-[400px] right-20 top-20 "
+                />
             </section>
 
             {/* Category Section */}
@@ -78,21 +76,46 @@ export default function HomePage() {
                             <ChevronRight className="w-8 h-8 cursor-pointer hover:opacity-70" />
                         </div>
                     </div>
+
                     <div className="flex gap-8">
                         {[
-                            "Phones",
-                            "Smart Watches",
-                            "Cameras",
-                            "Headphones",
-                            "Computers",
-                            "Gaming",
+                            {
+                                name: "Phones",
+                                img: "https://cdn-icons-png.flaticon.com/128/186/186239.png",
+                            },
+                            {
+                                name: "Smart Watches",
+                                img: "https://cdn-icons-png.flaticon.com/128/3978/3978929.png",
+                            },
+                            {
+                                name: "Cameras",
+                                img: "https://cdn-icons-png.flaticon.com/128/1042/1042339.png",
+                            },
+                            {
+                                name: "Headphones",
+                                img: "https://cdn-icons-png.flaticon.com/128/3791/3791461.png",
+                            },
+                            {
+                                name: "Computers",
+                                img: "https://cdn-icons-png.flaticon.com/128/2704/2704414.png",
+                            },
+                            {
+                                name: "Gaming",
+                                img: "https://cdn-icons-png.flaticon.com/128/1374/1374723.png",
+                            },
                         ].map((cat) => (
                             <div
-                                key={cat}
+                                key={cat.name}
                                 className="bg-[#ededed] rounded-[15px] px-12 py-6 flex flex-col items-center gap-2 min-w-[160px] h-32 justify-center cursor-pointer hover:bg-[#e0e0e0] transition"
                             >
-                                <div className="w-12 h-12 bg-gray-300 rounded mb-2" />
-                                <p className="text-base font-medium">{cat}</p>
+                                <img
+                                    src={cat.img}
+                                    alt={cat.name}
+                                    className="w-12 h-12 object-contain mb-2"
+                                />
+                                <p className="text-base font-medium whitespace-nowrap">
+                                    {cat.name}
+                                </p>
                             </div>
                         ))}
                     </div>
@@ -120,6 +143,23 @@ export default function HomePage() {
                         {products.map((product) => (
                             <ProductCard key={product.id} product={product} />
                         ))}
+                    </div>
+                </div>
+            </section>
+
+            {/*Sale section*/}
+            <section>
+                <div className="relative">
+                    <img src="./src/assets/sale.png" alt="sale banner" />
+                    <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                        <h2 className="text-white text-5xl font-bold">Big Summer Sale</h2>
+                        <p className="text-white font-light opacity-80 pb-8">Commodo fames vitae vitae leo mauris in. Eu consequat.</p>
+                        <Link
+                            to="/products"
+                            className="border border-white rounded-md px-14 py-4 text-center text-white font-medium w-fit hover:bg-white hover:text-black transition"
+                        >
+                            Shop Now
+                        </Link>
                     </div>
                 </div>
             </section>
