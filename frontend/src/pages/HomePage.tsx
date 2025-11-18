@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { api } from "../shared/api";
 import ProductCard from "../components/ProductCard";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import heroBanner from "../assets/hero_banner1.png";
+import saleBanner from "../assets/sale.png";
 
 export default function HomePage() {
     const [products, setProducts] = useState<any[]>([]);
@@ -57,7 +59,7 @@ export default function HomePage() {
                     </div>
                     <div className="mt-8 lg:mt-0 flex justify-center lg:block">
                         <img
-                            src="./src/assets/hero_banner1.png"
+                            src={heroBanner}
                             alt="iPhone 14 Pro"
                             className="w-64 sm:w-80 md:w-96 lg:w-[400px] lg:absolute lg:right-20 lg:top-20"
                         />
@@ -154,7 +156,7 @@ export default function HomePage() {
             <section className="px-4 sm:px-8 md:px-16 lg:px-0">
                 <div className="relative md:rounded-xl lg:rounded-2xl">
                     <img
-                        src="./src/assets/sale.png"
+                        src={saleBanner}
                         alt="sale banner"
                         className="w-full h-48 sm:h-64 md:h-80 lg:h-auto object-cover"
                     />
