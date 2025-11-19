@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Heart } from "lucide-react";
-import { api } from "../shared/api";
+import { api, API_URL } from "../shared/api";
 import { useWishlist } from "../hooks/useWishlist";
 
 type Product = {
@@ -29,16 +29,16 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         // Nếu là đường dẫn tương đối từ uploads
         if (imageUrl.startsWith("/uploads/")) {
-            return `http://localhost:4000${imageUrl}`;
+            return `${API_URL}${imageUrl}`;
         }
 
         // Nếu chỉ là filename hoặc đường dẫn không có /uploads/
         if (!imageUrl.startsWith("/")) {
-            return `http://localhost:4000/uploads/products/${imageUrl}`;
+            return `${API_URL}/uploads/products/${imageUrl}`;
         }
 
         // Fallback
-        return `http://localhost:4000${imageUrl}`;
+        return `${API_URL}${imageUrl}`;
     };
 
     // Xử lý images từ nhiều định dạng khác nhau
