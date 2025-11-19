@@ -3,36 +3,29 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { requireAdmin } from "../middleware/auth";
+import { v2 as cloudinary } from "cloudinary";
+import streamifier from "streamifier";
 
 const router = Router();
 
-// Cấu hình multer để lưu file
-const storage = multer.diskStorage({
-    destination: (req: any, file: any, cb: any) => {
-        const uploadDir = path.join(process.cwd(), "uploads", "products");
-        // Tạo thư mục nếu chưa tồn tại
-        if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true });
-        }
-        cb(null, uploadDir);
-    },
-    filename: (req: any, file: any, cb: any) => {
-        // Tạo tên file unique với timestamp
-        const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-        const ext = path.extname(file.originalname);
-        cb(null, `product-${uniqueSuffix}${ext}`);
-    },
+// Configure Cloudinary from env (support CLOUDINARY_URL or individual vars)
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Filter để chỉ cho phép upload hình ảnh
+// Filter to allow only images
 const fileFilter = (req: any, file: any, cb: any) => {
-    if (file.mimetype.startsWith("image/")) {
+    if (file.mimetype && file.mimetype.startsWith("image/")) {
         cb(null, true);
     } else {
         cb(new Error("Chỉ được upload file hình ảnh!"), false);
     }
 };
 
+// Use memory storage so we can stream buffer to Cloudinary
+const storage = multer.memoryStorage();
 const upload = multer({
     storage,
     fileFilter,
@@ -41,12 +34,25 @@ const upload = multer({
     },
 });
 
-// Route upload một file
+// Helper to upload buffer to Cloudinary using upload_stream
+const streamUpload = (buffer: Buffer, publicId?: string): Promise<any> => {
+    return new Promise((resolve, reject) => {
+        const options: any = { resource_type: "image" };
+        if (publicId) options.public_id = publicId;
+        // Keep files under optional folder if publicId contains folder prefix
+        cloudinary.uploader.upload_stream(options, (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+        }).end(buffer);
+    });
+};
+
+// Route upload one file -> streams to Cloudinary
 router.post(
     "/single",
     requireAdmin,
     upload.single("image"),
-    (req: any, res: Response) => {
+    async (req: any, res: Response) => {
         try {
             if (!req.file) {
                 return res
@@ -54,68 +60,113 @@ router.post(
                     .json({ message: "Không có file được upload" });
             }
 
-            const imageUrl = `/uploads/products/${req.file.filename}`;
+            // Generate a stable public_id similar to previous local filename convention
+            const uniqueSuffix =
+                Date.now() + "-" + Math.round(Math.random() * 1e9);
+            const ext = path.extname(req.file.originalname) || ".jpg";
+            const publicId = `products/product-${uniqueSuffix}`; // stored as public_id in Cloudinary
+
+            const result = await streamUpload(req.file.buffer, publicId);
+
+            // Return secure_url and public_id for client to store
             res.json({
                 message: "Upload thành công",
-                imageUrl,
-                filename: req.file.filename,
+                imageUrl: result.secure_url,
+                publicId: result.public_id,
+                raw: result,
             });
-        } catch (error) {
-            res.status(500).json({ message: "Lỗi upload file" });
+        } catch (error: any) {
+            console.error("Upload single error:", error);
+            res.status(500).json({
+                message: "Lỗi upload file",
+                detail: error.message || error,
+            });
         }
     }
 );
 
-// Route upload nhiều file
+// Route upload multiple files -> stream each to Cloudinary
 router.post(
     "/multiple",
     requireAdmin,
     upload.array("images", 5),
-    (req: any, res: Response) => {
+    async (req: any, res: Response) => {
         try {
-            if (
-                !req.files ||
-                !Array.isArray(req.files) ||
-                req.files.length === 0
-            ) {
+            if (!req.files || !Array.isArray(req.files) || req.files.length === 0) {
                 return res
                     .status(400)
                     .json({ message: "Không có file được upload" });
             }
 
-            const imageUrls = req.files.map(
-                (file: any) => `/uploads/products/${file.filename}`
-            );
+            const uploadPromises = req.files.map(async (file: any, idx: number) => {
+                const uniqueSuffix =
+                    Date.now() + "-" + Math.round(Math.random() * 1e9) + `-${idx}`;
+                const publicId = `products/product-${uniqueSuffix}`;
+                const result = await streamUpload(file.buffer, publicId);
+                return {
+                    imageUrl: result.secure_url,
+                    publicId: result.public_id,
+                    raw: result,
+                };
+            });
+
+            const results = await Promise.all(uploadPromises);
+
             res.json({
                 message: "Upload thành công",
-                imageUrls,
-                filenames: req.files.map((file: any) => file.filename),
+                images: results.map((r) => ({
+                    imageUrl: r.imageUrl,
+                    publicId: r.publicId,
+                })),
+                raw: results,
             });
-        } catch (error) {
-            res.status(500).json({ message: "Lỗi upload file" });
+        } catch (error: any) {
+            console.error("Upload multiple error:", error);
+            res.status(500).json({
+                message: "Lỗi upload file",
+                detail: error.message || error,
+            });
         }
     }
 );
 
-// Route xóa file
-router.delete("/:filename", requireAdmin, (req: Request, res: Response) => {
+// Route delete: try Cloudinary destroy (using provided publicId or filename), and fallback to deleting local file if exists
+router.delete("/:filename", requireAdmin, async (req: Request, res: Response) => {
     try {
         const { filename } = req.params;
-        const filePath = path.join(
+
+        // Attempt to delete from Cloudinary. The client should pass the publicId (e.g. products/product-123...) as filename param if stored that way.
+        let cloudResult: any = null;
+        try {
+            const publicId = filename.includes("/")
+                ? filename
+                : `products/${path.parse(filename).name}`;
+            cloudResult = await cloudinary.uploader.destroy(publicId, {
+                resource_type: "image",
+            });
+        } catch (cloudErr) {
+            console.warn("Cloudinary delete warning:", cloudErr);
+            // continue to try local delete
+        }
+
+        // Also attempt to delete local file if present (backwards compatibility)
+        const localFilePath = path.join(
             process.cwd(),
             "uploads",
             "products",
             filename
         );
-
-        if (fs.existsSync(filePath)) {
-            fs.unlinkSync(filePath);
-            res.json({ message: "Xóa file thành công" });
-        } else {
-            res.status(404).json({ message: "File không tồn tại" });
+        if (fs.existsSync(localFilePath)) {
+            fs.unlinkSync(localFilePath);
         }
+
+        res.json({ message: "Xóa file thực hiện xong", cloudResult });
     } catch (error) {
-        res.status(500).json({ message: "Lỗi xóa file" });
+        console.error("Delete file error:", error);
+        res.status(500).json({
+            message: "Lỗi xóa file",
+            detail: (error as any).message || error,
+        });
     }
 });
 

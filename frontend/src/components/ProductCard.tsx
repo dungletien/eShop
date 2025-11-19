@@ -27,15 +27,6 @@ export default function ProductCard({ product }: ProductCardProps) {
             return imageUrl;
         }
 
-        // Nếu là đường dẫn tương đối từ uploads
-        if (imageUrl.startsWith("/uploads/")) {
-            return `${API_URL}${imageUrl}`;
-        }
-
-        // Nếu chỉ là filename hoặc đường dẫn không có /uploads/
-        if (!imageUrl.startsWith("/")) {
-            return `${API_URL}/uploads/products/${imageUrl}`;
-        }
 
         // Fallback
         return `${API_URL}${imageUrl}`;
