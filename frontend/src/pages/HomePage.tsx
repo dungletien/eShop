@@ -43,7 +43,7 @@ export default function HomePage() {
                         <p className="text-lg md:text-xl lg:text-2xl font-semibold opacity-40">
                             Pro.Beyond.
                         </p>
-                        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[96px] font-thin leading-tight tracking-tight">
+                        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[96px] font-thin leading-tight tracking-tight whitespace-nowrap">
                             iPhone 14 <span className="font-semibold">Pro</span>
                         </h1>
                         <p className="text-base md:text-lg text-[#909090] px-4 lg:px-0">
