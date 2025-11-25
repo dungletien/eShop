@@ -1,5 +1,15 @@
 import { Link, useLocation } from "react-router-dom";
-import { Search, Heart, ShoppingCart, User, ChevronDown, LogOut, Package, Menu, X } from "lucide-react";
+import {
+    Search,
+    Heart,
+    ShoppingCart,
+    User,
+    ChevronDown,
+    LogOut,
+    Package,
+    Menu,
+    X,
+} from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { api } from "../shared/api";
 
@@ -13,20 +23,20 @@ export default function Header() {
 
     // Lấy thông tin user thực từ API
     useEffect(() => {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
         if (token) {
             // Lấy thông tin user từ API
-            api.get('/users/me')
-                .then(response => {
+            api.get("/users/me")
+                .then((response) => {
                     setUser({
                         name: response.data.fullName,
-                        email: response.data.email
+                        email: response.data.email,
                     });
                 })
-                .catch(error => {
-                    console.error('Error fetching user info:', error);
+                .catch((error) => {
+                    console.error("Error fetching user info:", error);
                     // Nếu token không hợp lệ, xóa token
-                    localStorage.removeItem('token');
+                    localStorage.removeItem("token");
                     setUser(null);
                 });
         }
@@ -35,22 +45,25 @@ export default function Header() {
     // Đóng menu khi click bên ngoài
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
-            if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+            if (
+                userMenuRef.current &&
+                !userMenuRef.current.contains(event.target as Node)
+            ) {
                 setShowUserMenu(false);
             }
         }
 
-        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener("mousedown", handleClickOutside);
         return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener("mousedown", handleClickOutside);
         };
     }, []);
 
     const handleLogout = () => {
-        localStorage.removeItem('token');
+        localStorage.removeItem("token");
         setUser(null);
         setShowUserMenu(false);
-        window.location.href = '/login';
+        window.location.href = "/login";
     };
 
     return (
@@ -75,27 +88,43 @@ export default function Header() {
 
                     {/* Desktop Navigation */}
                     <nav className="hidden lg:flex items-center gap-8 xl:gap-[52px] text-base font-medium text-black">
-                        <Link 
-                            to="/" 
-                            className={`transition-colors ${location.pathname === "/" ? "text-black" : "opacity-30 hover:opacity-70"}`}
+                        <Link
+                            to="/"
+                            className={`transition-colors ${
+                                location.pathname === "/"
+                                    ? "text-black"
+                                    : "opacity-30 hover:opacity-70"
+                            }`}
                         >
                             Home
                         </Link>
                         <Link
                             to="/about"
-                            className={`transition-colors ${location.pathname === "/about" ? "text-black" : "opacity-30 hover:opacity-70"}`}
+                            className={`transition-colors ${
+                                location.pathname === "/about"
+                                    ? "text-black"
+                                    : "opacity-30 hover:opacity-70"
+                            }`}
                         >
                             About
                         </Link>
                         <Link
                             to="/contact"
-                            className={`transition-colors ${location.pathname === "/contact" ? "text-black" : "opacity-30 hover:opacity-70"}`}
+                            className={`transition-colors ${
+                                location.pathname === "/contact"
+                                    ? "text-black"
+                                    : "opacity-30 hover:opacity-70"
+                            }`}
                         >
                             Contact Us
                         </Link>
                         <Link
                             to="/blog"
-                            className={`transition-colors ${location.pathname === "/blog" ? "text-black" : "opacity-30 hover:opacity-70"}`}
+                            className={`transition-colors ${
+                                location.pathname === "/blog"
+                                    ? "text-black"
+                                    : "opacity-30 hover:opacity-70"
+                            }`}
                         >
                             Blog
                         </Link>
@@ -104,9 +133,11 @@ export default function Header() {
                     {/* Desktop Icons */}
                     <div className="hidden md:flex items-center gap-4 lg:gap-6">
                         {/* Mobile Search Toggle */}
-                        <button 
+                        <button
                             className="md:hidden"
-                            onClick={() => setShowMobileSearch(!showMobileSearch)}
+                            onClick={() =>
+                                setShowMobileSearch(!showMobileSearch)
+                            }
                         >
                             <Search className="w-6 h-6 cursor-pointer hover:opacity-70" />
                         </button>
@@ -117,12 +148,14 @@ export default function Header() {
                         <Link to="/cart">
                             <ShoppingCart className="w-6 h-6 lg:w-8 lg:h-8 cursor-pointer hover:opacity-70 transition-opacity" />
                         </Link>
-                        
+
                         {/* User Menu */}
                         <div className="relative" ref={userMenuRef}>
                             {user ? (
                                 <button
-                                    onClick={() => setShowUserMenu(!showUserMenu)}
+                                    onClick={() =>
+                                        setShowUserMenu(!showUserMenu)
+                                    }
                                     className="flex items-center gap-2 cursor-pointer hover:opacity-70 transition-opacity"
                                 >
                                     <User className="w-6 h-6 lg:w-8 lg:h-8" />
@@ -137,14 +170,20 @@ export default function Header() {
                             {showUserMenu && user && (
                                 <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
                                     <div className="p-4 border-b border-gray-200">
-                                        <p className="font-medium text-gray-900">{user.name}</p>
-                                        <p className="text-sm text-gray-600">{user.email}</p>
+                                        <p className="font-medium text-gray-900">
+                                            {user.name}
+                                        </p>
+                                        <p className="text-sm text-gray-600">
+                                            {user.email}
+                                        </p>
                                     </div>
                                     <div className="py-2">
                                         <Link
                                             to="/orders"
                                             className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-50 transition"
-                                            onClick={() => setShowUserMenu(false)}
+                                            onClick={() =>
+                                                setShowUserMenu(false)
+                                            }
                                         >
                                             <Package className="w-5 h-5" />
                                             <span>Đơn hàng của tôi</span>
@@ -164,7 +203,11 @@ export default function Header() {
 
                     {/* Mobile Icons */}
                     <div className="flex md:hidden items-center gap-4">
-                        <button onClick={() => setShowMobileSearch(!showMobileSearch)}>
+                        <button
+                            onClick={() =>
+                                setShowMobileSearch(!showMobileSearch)
+                            }
+                        >
                             <Search className="w-6 h-6 cursor-pointer hover:opacity-70" />
                         </button>
                         <Link to="/wishlist">
@@ -174,13 +217,16 @@ export default function Header() {
                             <ShoppingCart className="w-6 h-6 cursor-pointer hover:opacity-70" />
                         </Link>
                         {user ? (
-                            <User className="w-6 h-6 cursor-pointer hover:opacity-70" onClick={() => setShowUserMenu(!showUserMenu)} />
+                            <User
+                                className="w-6 h-6 cursor-pointer hover:opacity-70"
+                                onClick={() => setShowUserMenu(!showUserMenu)}
+                            />
                         ) : (
                             <Link to="/login">
                                 <User className="w-6 h-6 cursor-pointer hover:opacity-70" />
                             </Link>
                         )}
-                        <button 
+                        <button
                             className="lg:hidden"
                             onClick={() => setShowMobileMenu(!showMobileMenu)}
                         >
@@ -209,42 +255,62 @@ export default function Header() {
                 {showMobileMenu && (
                     <div className="lg:hidden mt-4 py-4 border-t border-gray-200">
                         <nav className="flex flex-col gap-4">
-                            <Link 
-                                to="/" 
-                                className={`text-base font-medium transition-colors ${location.pathname === "/" ? "text-black" : "text-gray-600 hover:text-black"}`}
+                            <Link
+                                to="/"
+                                className={`text-base font-medium transition-colors ${
+                                    location.pathname === "/"
+                                        ? "text-black"
+                                        : "text-gray-600 hover:text-black"
+                                }`}
                                 onClick={() => setShowMobileMenu(false)}
                             >
                                 Home
                             </Link>
                             <Link
                                 to="/about"
-                                className={`text-base font-medium transition-colors ${location.pathname === "/about" ? "text-black" : "text-gray-600 hover:text-black"}`}
+                                className={`text-base font-medium transition-colors ${
+                                    location.pathname === "/about"
+                                        ? "text-black"
+                                        : "text-gray-600 hover:text-black"
+                                }`}
                                 onClick={() => setShowMobileMenu(false)}
                             >
                                 About
                             </Link>
                             <Link
                                 to="/contact"
-                                className={`text-base font-medium transition-colors ${location.pathname === "/contact" ? "text-black" : "text-gray-600 hover:text-black"}`}
+                                className={`text-base font-medium transition-colors ${
+                                    location.pathname === "/contact"
+                                        ? "text-black"
+                                        : "text-gray-600 hover:text-black"
+                                }`}
                                 onClick={() => setShowMobileMenu(false)}
                             >
                                 Contact Us
                             </Link>
                             <Link
                                 to="/blog"
-                                className={`text-base font-medium transition-colors ${location.pathname === "/blog" ? "text-black" : "text-gray-600 hover:text-black"}`}
+                                className={`text-base font-medium transition-colors ${
+                                    location.pathname === "/blog"
+                                        ? "text-black"
+                                        : "text-gray-600 hover:text-black"
+                                }`}
                                 onClick={() => setShowMobileMenu(false)}
                             >
                                 Blog
                             </Link>
-                            
+
                             {/* Mobile User Menu Items */}
                             {user && (
                                 <>
                                     <div className="border-t border-gray-200 pt-4 mt-4">
                                         <div className="mb-3">
-                                            <p className="font-medium text-gray-900">{user.name}</p>
-                                            <p className="text-sm text-gray-600">{user.email}</p>
+                                            <p className="font-medium text-gray-900">
+                                                {user.name}
+                                            </p>
+                                            <p className="text-sm text-gray-600">
+                                                {user.email}
+                                            </p>
                                         </div>
                                         <Link
                                             to="/orders"
@@ -277,4 +343,3 @@ export default function Header() {
         </header>
     );
 }
-

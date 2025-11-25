@@ -40,10 +40,12 @@ const streamUpload = (buffer: Buffer, publicId?: string): Promise<any> => {
         const options: any = { resource_type: "image" };
         if (publicId) options.public_id = publicId;
         // Keep files under optional folder if publicId contains folder prefix
-        cloudinary.uploader.upload_stream(options, (error, result) => {
-            if (error) return reject(error);
-            resolve(result);
-        }).end(buffer);
+        cloudinary.uploader
+            .upload_stream(options, (error, result) => {
+                if (error) return reject(error);
+                resolve(result);
+            })
+            .end(buffer);
     });
 };
 
@@ -92,23 +94,32 @@ router.post(
     upload.array("images", 5),
     async (req: any, res: Response) => {
         try {
-            if (!req.files || !Array.isArray(req.files) || req.files.length === 0) {
+            if (
+                !req.files ||
+                !Array.isArray(req.files) ||
+                req.files.length === 0
+            ) {
                 return res
                     .status(400)
                     .json({ message: "Không có file được upload" });
             }
 
-            const uploadPromises = req.files.map(async (file: any, idx: number) => {
-                const uniqueSuffix =
-                    Date.now() + "-" + Math.round(Math.random() * 1e9) + `-${idx}`;
-                const publicId = `products/product-${uniqueSuffix}`;
-                const result = await streamUpload(file.buffer, publicId);
-                return {
-                    imageUrl: result.secure_url,
-                    publicId: result.public_id,
-                    raw: result,
-                };
-            });
+            const uploadPromises = req.files.map(
+                async (file: any, idx: number) => {
+                    const uniqueSuffix =
+                        Date.now() +
+                        "-" +
+                        Math.round(Math.random() * 1e9) +
+                        `-${idx}`;
+                    const publicId = `products/product-${uniqueSuffix}`;
+                    const result = await streamUpload(file.buffer, publicId);
+                    return {
+                        imageUrl: result.secure_url,
+                        publicId: result.public_id,
+                        raw: result,
+                    };
+                }
+            );
 
             const results = await Promise.all(uploadPromises);
 
@@ -131,43 +142,47 @@ router.post(
 );
 
 // Route delete: try Cloudinary destroy (using provided publicId or filename), and fallback to deleting local file if exists
-router.delete("/:filename", requireAdmin, async (req: Request, res: Response) => {
-    try {
-        const { filename } = req.params;
-
-        // Attempt to delete from Cloudinary. The client should pass the publicId (e.g. products/product-123...) as filename param if stored that way.
-        let cloudResult: any = null;
+router.delete(
+    "/:filename",
+    requireAdmin,
+    async (req: Request, res: Response) => {
         try {
-            const publicId = filename.includes("/")
-                ? filename
-                : `products/${path.parse(filename).name}`;
-            cloudResult = await cloudinary.uploader.destroy(publicId, {
-                resource_type: "image",
+            const { filename } = req.params;
+
+            // Attempt to delete from Cloudinary. The client should pass the publicId (e.g. products/product-123...) as filename param if stored that way.
+            let cloudResult: any = null;
+            try {
+                const publicId = filename.includes("/")
+                    ? filename
+                    : `products/${path.parse(filename).name}`;
+                cloudResult = await cloudinary.uploader.destroy(publicId, {
+                    resource_type: "image",
+                });
+            } catch (cloudErr) {
+                console.warn("Cloudinary delete warning:", cloudErr);
+                // continue to try local delete
+            }
+
+            // Also attempt to delete local file if present (backwards compatibility)
+            const localFilePath = path.join(
+                process.cwd(),
+                "uploads",
+                "products",
+                filename
+            );
+            if (fs.existsSync(localFilePath)) {
+                fs.unlinkSync(localFilePath);
+            }
+
+            res.json({ message: "Xóa file thực hiện xong", cloudResult });
+        } catch (error) {
+            console.error("Delete file error:", error);
+            res.status(500).json({
+                message: "Lỗi xóa file",
+                detail: (error as any).message || error,
             });
-        } catch (cloudErr) {
-            console.warn("Cloudinary delete warning:", cloudErr);
-            // continue to try local delete
         }
-
-        // Also attempt to delete local file if present (backwards compatibility)
-        const localFilePath = path.join(
-            process.cwd(),
-            "uploads",
-            "products",
-            filename
-        );
-        if (fs.existsSync(localFilePath)) {
-            fs.unlinkSync(localFilePath);
-        }
-
-        res.json({ message: "Xóa file thực hiện xong", cloudResult });
-    } catch (error) {
-        console.error("Delete file error:", error);
-        res.status(500).json({
-            message: "Lỗi xóa file",
-            detail: (error as any).message || error,
-        });
     }
-});
+);
 
 export { router };

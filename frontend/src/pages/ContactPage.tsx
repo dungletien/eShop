@@ -128,7 +128,10 @@ export default function ContactPage() {
                                 Gửi tin nhắn cho chúng tôi
                             </h2>
 
-                            <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
+                            <form
+                                onSubmit={handleSubmit}
+                                className="space-y-4 md:space-y-6"
+                            >
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                                     <div>
                                         <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">

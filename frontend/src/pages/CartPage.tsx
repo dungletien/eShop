@@ -51,7 +51,9 @@ export default function CartPage() {
     return (
         <div className="container mx-auto px-4 sm:px-8 md:px-16 lg:px-40 py-6 md:py-10">
             <Breadcrumb items={[{ label: "Giỏ hàng" }]} />
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold mb-6 md:mb-8 mt-4 md:mt-6">Giỏ hàng</h1>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold mb-6 md:mb-8 mt-4 md:mt-6">
+                Giỏ hàng
+            </h1>
 
             {items.length === 0 ? (
                 <div className="text-center py-12 md:py-20">

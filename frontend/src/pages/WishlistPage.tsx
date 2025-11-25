@@ -43,10 +43,14 @@ export default function WishlistPage() {
     return (
         <div className="container mx-auto px-4 sm:px-8 md:px-16 lg:px-40 py-6 md:py-10">
             <Breadcrumb items={[{ label: "Sản phẩm yêu thích" }]} />
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold mb-6 md:mb-8">Sản phẩm yêu thích</h1>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold mb-6 md:mb-8">
+                Sản phẩm yêu thích
+            </h1>
 
             {loading ? (
-                <div className="text-center py-12 md:py-20 text-sm md:text-base">Đang tải...</div>
+                <div className="text-center py-12 md:py-20 text-sm md:text-base">
+                    Đang tải...
+                </div>
             ) : wishlistProducts.length === 0 ? (
                 <div className="text-center py-12 md:py-20 px-4">
                     <div className="text-gray-500 text-base md:text-lg mb-4">

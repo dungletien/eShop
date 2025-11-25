@@ -27,7 +27,6 @@ export default function ProductCard({ product }: ProductCardProps) {
             return imageUrl;
         }
 
-
         // Fallback
         return `${API_URL}${imageUrl}`;
     };

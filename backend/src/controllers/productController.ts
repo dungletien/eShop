@@ -119,39 +119,41 @@ export async function updateProductHandler(req: Request, res: Response) {
 export async function deleteProductHandler(req: Request, res: Response) {
     const { id } = req.params as { id: string };
     const productId = Number(id);
-    
+
     try {
         // Use transaction to delete related records first, then the product
         await prisma.$transaction(async (tx) => {
             // Delete related cart items
             await tx.cartItem.deleteMany({
-                where: { productId }
+                where: { productId },
             });
-            
+
             // Delete related wishlist items
             await tx.wishlistItem.deleteMany({
-                where: { productId }
+                where: { productId },
             });
-            
+
             // Note: We don't delete OrderItems as they represent historical data
             // Instead, we'll handle this by checking if product has orders
             const orderItems = await tx.orderItem.findMany({
-                where: { productId }
+                where: { productId },
             });
-            
+
             if (orderItems.length > 0) {
-                throw new Error("Không thể xóa sản phẩm này vì đã có đơn hàng liên quan. Hãy ngừng bán sản phẩm thay vì xóa.");
+                throw new Error(
+                    "Không thể xóa sản phẩm này vì đã có đơn hàng liên quan. Hãy ngừng bán sản phẩm thay vì xóa."
+                );
             }
-            
+
             // Delete the product
             await tx.product.delete({ where: { id: productId } });
         });
-        
+
         return res.status(204).send();
     } catch (error: any) {
-        console.error('Delete product error:', error);
-        return res.status(400).json({ 
-            message: error.message || "Không thể xóa sản phẩm" 
+        console.error("Delete product error:", error);
+        return res.status(400).json({
+            message: error.message || "Không thể xóa sản phẩm",
         });
     }
 }

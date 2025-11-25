@@ -328,7 +328,9 @@ export default function ProductDetailPage() {
                 </div>
 
                 <div className="flex flex-col gap-4 md:gap-6 mt-6 lg:mt-0">
-                    <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold">{product.name}</h1>
+                    <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold">
+                        {product.name}
+                    </h1>
                     <p className="text-2xl sm:text-3xl font-semibold text-black">
                         {Number(product.price).toLocaleString("vi-VN")} ₫
                     </p>
@@ -586,7 +588,10 @@ export default function ProductDetailPage() {
                                                 <span className="font-medium text-sm md:text-base">
                                                     {review.userName}
                                                 </span>
-                                                {renderStars(review.rating, "w-3 h-3 md:w-4 md:h-4")}
+                                                {renderStars(
+                                                    review.rating,
+                                                    "w-3 h-3 md:w-4 md:h-4"
+                                                )}
                                                 <span className="text-xs md:text-sm text-gray-500">
                                                     {new Date(
                                                         review.createdAt

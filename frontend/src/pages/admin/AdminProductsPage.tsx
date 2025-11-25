@@ -1,6 +1,16 @@
 import { useEffect, useState } from "react";
 import { api, API_URL } from "../../shared/api";
-import { Plus, Edit, Trash2, X, Save, Upload, Image, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+    Plus,
+    Edit,
+    Trash2,
+    X,
+    Save,
+    Upload,
+    Image,
+    ChevronLeft,
+    ChevronRight,
+} from "lucide-react";
 
 type Product = {
     id: number;
@@ -26,7 +36,7 @@ export default function AdminProductsPage() {
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-    
+
     // Pagination states
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -93,15 +103,15 @@ export default function AdminProductsPage() {
     const loadData = async () => {
         try {
             const [productsRes, categoriesRes] = await Promise.all([
-                api.get("/products", { 
-                    params: { 
-                        page: currentPage, 
-                        pageSize: pageSize 
-                    } 
+                api.get("/products", {
+                    params: {
+                        page: currentPage,
+                        pageSize: pageSize,
+                    },
                 }),
                 api.get("/categories"),
             ]);
-            
+
             setProducts(productsRes.data.items || []);
             setCategories(categoriesRes.data || []);
             setTotalProducts(productsRes.data.total || 0);
@@ -309,26 +319,34 @@ export default function AdminProductsPage() {
     };
 
     const handleDelete = async (id: number) => {
-        if (!confirm("Bạn có chắc muốn xóa sản phẩm này?\n\nLưu ý: Sản phẩm sẽ bị xóa khỏi giỏ hàng và danh sách yêu thích của tất cả người dùng.")) return;
-        
+        if (
+            !confirm(
+                "Bạn có chắc muốn xóa sản phẩm này?\n\nLưu ý: Sản phẩm sẽ bị xóa khỏi giỏ hàng và danh sách yêu thích của tất cả người dùng."
+            )
+        )
+            return;
+
         try {
             await api.delete(`/products/${id}`);
             alert("Xóa sản phẩm thành công");
-            
+
             // If this is the last item on current page and not the first page, go to previous page
             if (products.length === 1 && currentPage > 1) {
-                setCurrentPage(prev => prev - 1);
+                setCurrentPage((prev) => prev - 1);
             } else {
                 loadData();
             }
         } catch (error: any) {
-            console.error('Delete error:', error);
-            const errorMessage = error.response?.data?.message || "Lỗi khi xóa sản phẩm";
+            console.error("Delete error:", error);
+            const errorMessage =
+                error.response?.data?.message || "Lỗi khi xóa sản phẩm";
             alert(errorMessage);
-            
+
             // If the error is about existing orders, suggest alternative action
             if (errorMessage.includes("đơn hàng")) {
-                alert("Gợi ý: Thay vì xóa, bạn có thể đặt số lượng tồn kho về 0 để ngừng bán sản phẩm này.");
+                alert(
+                    "Gợi ý: Thay vì xóa, bạn có thể đặt số lượng tồn kho về 0 để ngừng bán sản phẩm này."
+                );
             }
         }
     };
@@ -470,7 +488,7 @@ export default function AdminProductsPage() {
             {totalPages > 1 && (
                 <div className="mt-6 flex items-center justify-between">
                     <div className="text-sm text-gray-700">
-                        Hiển thị  {totalProducts} sản phẩm
+                        Hiển thị {totalProducts} sản phẩm
                     </div>
                     <div className="flex items-center gap-2">
                         <button
@@ -481,45 +499,56 @@ export default function AdminProductsPage() {
                             Đầu
                         </button>
                         <button
-                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                            onClick={() =>
+                                setCurrentPage((prev) => Math.max(prev - 1, 1))
+                            }
                             disabled={currentPage === 1}
                             className="px-2 py-2 text-sm font-medium text-gray-500 bg-white border-t border-b border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
                         >
                             <ChevronLeft className="w-4 h-4" />
                         </button>
-                        
+
                         {/* Page numbers */}
                         <div className="flex items-center">
-                            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                                let pageNum;
-                                if (totalPages <= 5) {
-                                    pageNum = i + 1;
-                                } else if (currentPage <= 3) {
-                                    pageNum = i + 1;
-                                } else if (currentPage >= totalPages - 2) {
-                                    pageNum = totalPages - 4 + i;
-                                } else {
-                                    pageNum = currentPage - 2 + i;
+                            {Array.from(
+                                { length: Math.min(5, totalPages) },
+                                (_, i) => {
+                                    let pageNum;
+                                    if (totalPages <= 5) {
+                                        pageNum = i + 1;
+                                    } else if (currentPage <= 3) {
+                                        pageNum = i + 1;
+                                    } else if (currentPage >= totalPages - 2) {
+                                        pageNum = totalPages - 4 + i;
+                                    } else {
+                                        pageNum = currentPage - 2 + i;
+                                    }
+
+                                    return (
+                                        <button
+                                            key={pageNum}
+                                            onClick={() =>
+                                                setCurrentPage(pageNum)
+                                            }
+                                            className={`px-3 py-2 text-sm font-medium border-t border-b border-gray-300 ${
+                                                currentPage === pageNum
+                                                    ? "bg-black text-white border-black"
+                                                    : "bg-white text-gray-500 hover:bg-gray-50"
+                                            }`}
+                                        >
+                                            {pageNum}
+                                        </button>
+                                    );
                                 }
-                                
-                                return (
-                                    <button
-                                        key={pageNum}
-                                        onClick={() => setCurrentPage(pageNum)}
-                                        className={`px-3 py-2 text-sm font-medium border-t border-b border-gray-300 ${
-                                            currentPage === pageNum
-                                                ? 'bg-black text-white border-black'
-                                                : 'bg-white text-gray-500 hover:bg-gray-50'
-                                        }`}
-                                    >
-                                        {pageNum}
-                                    </button>
-                                );
-                            })}
+                            )}
                         </div>
-                        
+
                         <button
-                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                            onClick={() =>
+                                setCurrentPage((prev) =>
+                                    Math.min(prev + 1, totalPages)
+                                )
+                            }
                             disabled={currentPage === totalPages}
                             className="px-2 py-2 text-sm font-medium text-gray-500 bg-white border-t border-b border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
                         >
